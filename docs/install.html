@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Yotlang 开源编程语言</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link href="http://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">
+    <style type="text/css">
+      
+    </style>
+    <link href="css/bootstrap-responsive.min.css" rel="stylesheet">
+    <link href="css/colors.css" rel="stylesheet">
+
+          <style type="text/css">
+    a.sourceLine { display: inline-block; line-height: 1.25; }
+    a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+    a.sourceLine:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode { white-space: pre; position: relative; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    code.sourceCode { white-space: pre-wrap; }
+    a.sourceLine { text-indent: -1em; padding-left: 1em; }
+    }
+    pre.numberSource a.sourceLine
+      { position: relative; left: -4em; }
+    pre.numberSource a.sourceLine::before
+      { content: attr(title);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; pointer-events: all; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {  }
+    @media screen {
+    a.sourceLine::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+      </style>
+            <link rel="stylesheet" href="css/style.css" />
+              </head>
+
+  <body>
+
+    <div>
+
+        <div class="row">
+
+          <div class="span3 side toc">
+              <ul>
+              <li><a href="index.html">主页</a></li>
+              <li><a href="https://github.com/medici/yot">Github</a></li>
+              </ul>
+              <ul>
+              <li><a href="#安装">安装</a><ul>
+              <li><a href="#mac64bit-linux64bit">Mac(64bit) &amp; Linux(64bit)</a></li>
+              <li><a href="#运行-hello-world">运行 “Hello World”</a></li>
+              <li><a href="#windows">Windows</a></li>
+              </ul></li>
+              </ul>
+          </div>
+
+          <div class="span9 body">
+<h1 id="安装">安装</h1>
+<h2 id="mac64bit-linux64bit">Mac(64bit) &amp; Linux(64bit)</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" title="1"><span class="op">&gt;&gt;&gt;</span> <span class="ex">./configure</span></a>
+<a class="sourceLine" id="cb1-2" title="2"><span class="op">&gt;&gt;&gt;</span> <span class="bu">cd</span> src</a>
+<a class="sourceLine" id="cb1-3" title="3"><span class="op">&gt;&gt;&gt;</span> <span class="fu">make</span></a></code></pre></div>
+<h2 id="运行-hello-world">运行 “Hello World”</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode pascal"><code class="sourceCode pascal"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">module</span> hello_world</a>
+<a class="sourceLine" id="cb2-2" title="2"><span class="kw">import</span> <span class="dt">Text</span>;</a>
+<a class="sourceLine" id="cb2-3" title="3"></a>
+<a class="sourceLine" id="cb2-4" title="4">func main()</a>
+<a class="sourceLine" id="cb2-5" title="5">    |</a>
+<a class="sourceLine" id="cb2-6" title="6">        <span class="kw">const</span> str = &quot;hello world&quot;;</a>
+<a class="sourceLine" id="cb2-7" title="7">    |</a>
+<a class="sourceLine" id="cb2-8" title="8">    <span class="dt">Text</span>.WriteString(str);</a>
+<a class="sourceLine" id="cb2-9" title="9">    <span class="dt">Text</span>.WriteLn</a>
+<a class="sourceLine" id="cb2-10" title="10"><span class="kw">end</span>;</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb3-1" title="1"><span class="op">&gt;&gt;&gt;</span> <span class="ex">./yot</span> -o hello_world.yot</a>
+<a class="sourceLine" id="cb3-2" title="2"><span class="op">&gt;&gt;&gt;</span> <span class="ex">./hello_world</span></a>
+<a class="sourceLine" id="cb3-3" title="3"><span class="ex">Hello</span> World</a></code></pre></div>
+<h2 id="windows">Windows</h2>
+<p>正在开发中。</p>
+          </div>
+        </div>
+
+    </div>
+    <script src="https://code.jquery.com/jquery.js"></script>
+    <script src="js/nav.js"></script>
+  </body>
+</html>

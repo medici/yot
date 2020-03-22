@@ -1,0 +1,32 @@
+module char
+	const 
+		A* = 41x;
+		LF = 0ax;
+
+	var c2 : char;
+
+	func main ()
+		|
+			const d = 64x; i = 1;
+			var c, ch : char;
+		|
+
+		c := 61x;
+		c2 := 62x;
+		Write(d);
+		Write(LF);
+		Write(c2);
+		Write(LF);
+		Write(A);
+		Write(LF);
+		Write(c);
+		WriteLn;
+
+		if (d > c) & (c < d) or ((c # d) or true & ((c > d) & (c > d))) then
+            c := 65x;
+        end;
+        Write(c);
+        WriteLn;
+	end;
+
+end.

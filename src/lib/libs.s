@@ -1,0 +1,1 @@
+../targets/darwin-x86-64/crt0-darwin-x86-64.s

@@ -1,0 +1,18 @@
+module string
+import Text;
+
+func main()
+	|
+		const str = "abc9";
+		var s : array 256 of char;
+			  i : integer;
+	|
+
+	i := 0;
+	s := "strssssa";
+	Text.WriteString(s);
+	
+	WriteLn
+end;
+
+end.

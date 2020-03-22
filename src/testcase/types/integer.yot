@@ -1,0 +1,57 @@
+module integer
+    import types;
+    
+    const
+        wordsize* = 666;
+        wordsize1 = 6661;
+
+    var 
+        ii*: types.integer2;
+        jj*: types.integer3;
+
+    func main ()
+        |
+            const
+                wordsize1 = 6662;
+            type 
+                integer2 = integer;
+                integer3 = types.integer2;
+            var 
+                ii : integer3;
+                i  : integer2;
+                j  : integer;
+        |
+        ii := 1h;
+        WriteInt(ii);
+        WriteLn;
+
+        ii := 20h;
+        WriteInt(ii);
+        WriteLn;
+
+        WriteInt(wordsize);
+        WriteLn;
+        WriteInt(wordsize1);
+        WriteLn;
+        ii := 22;
+        WriteInt(ii);
+        WriteLn;
+        jj := 8;
+        WriteInt(jj);
+        WriteLn;
+        ii := 22 mod 8;
+        WriteInt(ii);
+        WriteLn;
+        i := 66;
+        WriteInt(i);
+        WriteLn;
+        j := 55;
+
+        i := i div j + 12 + 13 * i * j;
+        WriteInt(i);
+        WriteLn;
+        i := i / j;
+        WriteInt(i);
+        WriteLn
+    end;
+end.

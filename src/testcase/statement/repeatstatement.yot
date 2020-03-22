@@ -1,0 +1,19 @@
+module repeatstatement
+	import Text;
+
+	func main ()
+		|
+			var i, j : integer;
+		|
+
+		i := 0;
+		j := -99;
+
+		repeat 
+			j := j + 2
+		until j >= i + 2;
+
+		Text.WriteInt(j);
+		Text.WriteLn;
+	end;
+end.

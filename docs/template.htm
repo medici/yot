@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Yotlang 开源编程语言</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link href="http://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">
+    <style type="text/css">
+      $header-includes$
+    </style>
+    <link href="css/bootstrap-responsive.min.css" rel="stylesheet">
+    <link href="css/colors.css" rel="stylesheet">
+
+    $if(highlighting-css)$
+      <style type="text/css">
+    $highlighting-css$
+      </style>
+    $endif$
+    $for(css)$
+    <link rel="stylesheet" href="$css$" $if(html5)$$else$type="text/css" $endif$/>
+    $endfor$
+    $if(math)$
+    $if(html5)$
+    $else$
+      $math$
+    $endif$
+    $endif$
+    $for(header-includes)$
+      $header-includes$
+    $endfor$
+  </head>
+
+  <body>
+
+    <div>
+
+        <div class="row">
+
+          <div class="span3 side toc">
+              <ul>
+              <li><a href="index.html">主页</a></li>
+              <li><a href="https://github.com/medici/yot">Github</a></li>
+              </ul>
+              $toc$
+          </div>
+
+          <div class="span9 body">
+$body$
+          </div>
+        </div>
+
+    </div>
+    <script src="https://code.jquery.com/jquery.js"></script>
+    <script src="js/nav.js"></script>
+  </body>
+</html>

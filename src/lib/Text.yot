@@ -1,0 +1,164 @@
+module Text
+
+	const line = 2dx; 
+				plus = 2bx; 
+				LF = 0ax;
+
+	func WriteInt*(x : integer)
+		|
+			
+			var x0, index : integer;
+				arr : array 10 of integer;
+		|
+
+		index := 0;
+
+		if x < 0 then
+			Write(line);
+			x0 := -x 
+		else
+			x0 := x;
+		end;
+
+		repeat
+	        arr[index] := x0 mod 10 + 30h; 
+	        x0 := x0 div 10;
+	        index := index + 1
+	    until x0 = 0;
+
+	    repeat 
+	    	index := index - 1;
+	    	Write(arr[index]) 
+	    until index = 0
+	end;
+
+	func WriteLn*()
+		|
+			const LF = 0ax;
+		| 
+		Write(LF);
+	end;
+
+	(*
+	func Ten(n : integer) : real
+		|
+			var t, p : real;
+		|
+		t := 1.0;
+		p := 10.0;
+
+		if n # 0 then
+			repeat
+				if n mod 2 = 1 then
+					t := p * t;
+				end;
+				p := p * p;
+				n := n div 2
+			until n <= 0;
+		end;
+
+		return t
+	end;
+	*)
+
+	func WriteString*(s: array of char)
+		|
+			var i: integer;
+		|
+		i := 0;
+		while s[i] # 0x do 
+			Write(s[i]);
+			i := i + 1
+		end;
+	end;
+
+	func WriteReal*(x: real)
+		|
+			var e, i, k, m, n, n2 : integer;
+					t, p : real;
+      		d: array 16 of char;
+		|
+		n := 15;
+		e := Asr(Ord(x), 23) mod 100h;  (*binary exponent*)
+    if e = 0 then
+      Write(30x)
+    elsif e = 255 then 
+    	Write(0x)
+    	(* WriteString(W, " NaN ") *)
+    else 
+      (* 2 < n < 9 digits to be written*)
+      if x < 0.0 then 
+      	Write(line);
+      	x := -x 
+      end;
+      e := (e - 127) * 77 div 256 - 6;  (*decimal exponent*)
+
+
+
+		    (* Ten func *)
+		    t := 1.0;
+			p := 10.0; (*compute 10^n *)
+			if e < 0 then
+				n2 := -e
+			else
+				n2 := e
+			end;
+			if n2 # 0 then
+				repeat
+					if n mod 2 = 1 then
+						t := p * t;
+					end;
+					p := p * p;
+					n2 := n2 div 2
+				until n2 <= 0;
+			end;
+
+
+      if e >= 0 then 
+      	x := x / t
+      else 
+      	x := t * x 
+      end;
+      m := Floor(x + 0.5);
+
+      if m >= 10000000 then
+      	e := e + 1;
+      	m := m div 10 
+      end;
+      i := 0; 
+      k := 13-n;
+      repeat
+        if i = k then
+        	m := m + 5
+        end;    (*rounding*)
+       	d[i] := Chr(m mod 10 + 30h); 
+       	m := m div 10; 
+       	i := i + 1
+      until m = 0;
+      i := i - 1;
+      Write(d[i]); 
+      Write(2ex);
+      if i < n-7 then 
+      	n := 0 
+      else
+      	n := 14 - n 
+      end;
+      if i > n then
+      	repeat
+      		i := i - 1;
+      		Write(d[i])
+      	until i <= n;
+      end;
+      Write(65x); 
+      e := e + 6;
+      if e < 0 then 
+       	Write(line); 
+       	e := -e 
+      else
+       	Write(plus) 
+      end;
+      Write(Chr(e div 10 + 30h)); 
+      Write(Chr(e mod 10 + 30h))
+		end
+	end;
+end.

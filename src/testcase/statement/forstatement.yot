@@ -1,0 +1,21 @@
+module forstatement
+	import Text;
+	
+	func main() 
+		|
+			var i, j,z : integer;
+		|
+
+		i := 10;
+		j := 0;
+		
+		for z := 1 to i by 2 do
+			j := j + 1
+		end;
+
+		Text.WriteInt(j);
+		Text.WriteLn;
+		Text.WriteInt(i);
+		Text.WriteLn
+	end;
+end.

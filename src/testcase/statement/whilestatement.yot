@@ -1,0 +1,25 @@
+module whilestatement
+	import Text;
+
+	func main() 
+		|
+			var i, j : integer;
+		|
+
+		i := 10;
+		j := 0;
+		
+		while i > j do
+			j := j + 1
+		elsif j < 20 do
+			j := j + 1
+		elsif i > 1 do
+			i := i - 1
+		end;
+
+		Text.WriteInt(j);
+		Text.WriteLn;
+		Text.WriteInt(i);
+		Text.WriteLn
+	end;
+end.

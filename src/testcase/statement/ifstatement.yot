@@ -1,0 +1,85 @@
+module ifstatement
+    const
+        tru* = true;
+        fls = false;
+        
+
+    func main ()
+        |
+            var i, j  : integer;
+                b     : boolean;
+                r, rr : real;
+        |
+
+        
+        r := 1.2;
+        rr := 3.6;
+
+        
+        if r = rr then
+            r := 2.8
+        end;
+        WriteReal(r);
+        WriteLn();
+        
+        if r > rr then
+            r := 2.8
+        else
+            r := 3.8
+        end;
+        WriteReal(r);
+        WriteLn();
+
+        if r < rr then
+            r := 3.8
+        elsif r = rr then
+            r := 4.8
+        end;
+        WriteReal(r);
+        WriteLn();
+
+        if r < rr then
+            r := 3.8
+        elsif r = rr then
+            r := 3.8
+        else
+            r := 4.8
+        end;
+        WriteReal(r);
+        WriteLn();
+
+        if (r > rr) & (r < rr) or ((r # rr) or true & ((r > rr) & (r > rr))) then
+            r := 5.8
+        end;
+        WriteReal(r);
+        WriteLn;
+
+        
+    
+        i := 66;
+        j := 55;
+        
+        
+        if ~(~(~(tru or tru & fls) or tru & fls) or ~fls) then
+            i := 1
+        elsif ((tru or tru & fls) or tru & fls) or fls then
+            i := 2;
+        end;
+        WriteInt(i);
+        WriteLn;
+
+        if (i > j) & (i < j) or ((i # j) or true & ((i > j) & (i > j))) then
+            i := 3
+        end;
+        WriteInt(i);
+        WriteLn;
+
+        
+        if (i < j) then
+            i := 4
+        end;
+        WriteInt(i);
+        WriteLn
+    end;
+
+end.

@@ -1,0 +1,13 @@
+module arr
+	import Text;
+	func main()
+		|
+			var int : array 100 of integer;
+				i : integer;
+		|
+		i := 10;
+		int[i] := 99;
+		Text.WriteInt(int[i]);
+		WriteLn
+	end;
+end.

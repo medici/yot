@@ -1,0 +1,62 @@
+module real
+    import types;
+
+    const
+        wordsize2* = 666.6;
+        wordsize3 = 6661.6;
+
+    var 
+        ii: types.real2;
+        jj: real;
+
+    func main ()
+        |
+            const
+                wordsize3 = 6662.6;
+
+            type 
+                real2 = real;
+                real3 = types.real2;
+
+            var 
+                ii : real;
+                i  : real2;
+                j  : real3;
+        |
+
+        ii := 10e5;
+        WriteReal(ii);
+        WriteLn();
+
+        ii := 10e-5;
+        WriteReal(ii);
+        WriteLn();
+
+        WriteReal(wordsize2);
+        WriteLn();
+        WriteReal(wordsize3);
+        WriteLn();
+        ii := 2.0;
+        WriteReal(ii);
+        WriteLn();
+        i  := 20.0;
+        WriteReal(i);
+        WriteLn();
+        j  := 10.0;
+        WriteReal(j);
+        WriteLn();
+        i  := i * j;
+        WriteReal(i);
+        WriteLn();
+        i  := i / j;
+        WriteReal(i);
+        WriteLn();
+        i  := i div j;
+        WriteReal(i);
+        WriteLn();
+        i  := 13.0 mod 12.0;
+        WriteReal(i);
+        WriteLn();
+    end;
+
+end.

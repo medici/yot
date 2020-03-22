@@ -1,0 +1,41 @@
+module standard
+	import Text;
+
+	const 
+		rrr = 1.4;
+
+	var 
+		r : real;
+
+	func main() 
+		|
+			const rr = 12.4;
+			var 
+				i : integer;
+		|
+		(*
+		r := 923.9;
+		Text.WriteReal(r);
+		Text.WriteLn;
+
+		i := -1;
+		i := Abs(i);
+		Text.WriteInt(i);
+		Text.WriteLn
+
+		
+		i := Ord(r);
+		i := Asr(i, 23);
+		Text.WriteInt(i);
+		WriteLn;
+
+		i := Floor(2.6);
+		Text.WriteInt(i);
+		WriteLn;		*)
+
+		r := Abs(-12.4);
+		Text.WriteReal(r);
+		Text.WriteLn
+		
+	end;
+end.

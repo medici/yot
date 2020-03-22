@@ -1,0 +1,6 @@
+module types
+    type 
+        integer2* = integer;
+        integer3* = integer2;
+        real2*    = real;
+end.

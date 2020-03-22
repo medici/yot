@@ -1,0 +1,94 @@
+module boolean
+    const
+        tru* = true;
+        fls = false;
+
+    func main ()
+        |
+            var i, j: integer;
+                b : boolean;
+        |
+
+        i := 66;
+        j := 55;
+
+
+
+        b := (i > j) & (i < j) & ((i > j) & (i < j));
+        WriteBool(b);
+
+             (*
+        b := ~(~(~(tru or tru & fls) or tru & fls) or ~fls);
+        WriteBool(b);
+        WriteLn;
+
+   
+            true
+
+            false
+            false
+            false
+            false
+
+            true
+            true
+            true
+            true
+            true
+            true
+
+            false
+            true
+            true
+
+
+        b := true;
+        WriteBool(b);
+        WriteLn;
+
+        b := false;
+        WriteBool(b);
+        WriteLn;
+        b := (i > j) & (i < j) & ((i > j) & (i < j));
+        WriteBool(b);
+        WriteLn;
+        b := fls & (tru or (tru & fls));
+        WriteBool(b);
+        WriteLn;
+        b := ((tru & fls) or tru) & fls; 
+        WriteBool(b);
+        WriteLn;
+
+        b := fls or (tru & fls or (tru & fls or tru));
+        WriteBool(b);
+        WriteLn;
+        b := ((tru or tru & fls) or tru & fls) or fls;
+        WriteBool(b);
+        WriteLn;
+        b := tru & true & tru & tru or tru & false;
+        WriteBool(b);
+        WriteLn;
+        b := tru & false or tru & true & tru & tru;
+        WriteBool(b);
+        WriteLn;
+        b := (tru or false) & true;
+        WriteBool(b);
+        WriteLn;
+        b := true & (tru or false);
+        WriteBool(b);
+        WriteLn;
+
+        b := (i > j) & (i < j) or ((i # j) & ((i > j) & (i <= j)));
+        WriteBool(b);
+        WriteLn;
+        b := (i >= j) & (i # j);
+        WriteBool(b);
+        WriteLn;
+        b := ((i <= j) or (i > j)) & (i # j);
+        WriteBool(b);
+        WriteLn;
+        *)
+        
+    end;
+
+end.

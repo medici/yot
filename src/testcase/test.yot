@@ -1,0 +1,35 @@
+(*  
+    movb    $1, Ybool1(%rip)
+    movb    $0, Ybool2(%rip)
+    movsb   Ybool1(%rip), %rdi 
+*)
+
+
+module test
+    import class;
+    
+    const
+        wordsize* = 666.666;
+
+    var 
+        ii*: class.real2;
+        jj*: class.integer3;
+        bool1: boolean;
+        bool2: boolean;
+
+    func main ()
+        |
+
+            type 
+                integer2 = integer;
+                integer3 = integer2;
+                real2    = real;
+            var 
+                ii :class.integer3;
+        |
+
+        ii := 22;
+        WriteInt(ii);
+        WriteLn
+    end;
+end.
