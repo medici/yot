@@ -25,7 +25,7 @@ import Text;
 
 func main()
     |
-	    const str = "hello world";
+        const str = "hello world";
     |
     Text.WriteString(str);
     Text.WriteLn
