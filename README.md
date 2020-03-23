@@ -1,4 +1,5 @@
 # yot
+
 开源编程语言
 [yotlang.com](http://yotlang.com)
 
@@ -23,11 +24,11 @@ module hello_world
 import Text;
 
 func main()
-	|
-		const str = "hello world";
-	|
-	Text.WriteString(str);
-	Text.WriteLn
+    |
+	    const str = "hello world";
+    |
+    Text.WriteString(str);
+    Text.WriteLn
 end;
 ```
 
