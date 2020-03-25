@@ -22,7 +22,7 @@ module arr
 		i := 10;
 		int[i] := 99;
 		Text.WriteInt(int[i]);
-		WriteLn
+		Text.WriteLn
 	end;
 end.
 ```
