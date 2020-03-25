@@ -4,7 +4,7 @@ MATHJAX = "http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_H
 FLAGS = --standalone --toc --toc-depth=2 --mathjax=$(MATHJAX) --highlight-style pygments
 STYLE = css/style.css
 TEMPLATE_HTML = template.htm
-SRC = introduction.md install.md statement.md index.md char.md boolean.md number.md
+SRC = introduction.md install.md statement.md index.md char.md boolean.md number.md record.md array.md
 PNG_IMAGES = $(patsubst %.pdf,%.png,$(wildcard img/*.pdf))
 
 OBJ = $(SRC:.md=.html)

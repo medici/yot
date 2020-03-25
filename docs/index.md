@@ -8,4 +8,6 @@
 * [Chapter 3: 字符类型](char.html)
 * [Chapter 4: 布尔类型](boolean.html)
 * [Chapter 5: 数值](number.html)
-* [Chapter 6: 语句](statement.html)
+* [Chapter 6: 数组](array.html)
+* [Chapter 7: 记录](record.html)
+* [Chapter 8: 语句](statement.html)
