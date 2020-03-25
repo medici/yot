@@ -87,6 +87,7 @@ void store(Item x, Item y);
 void open_array_param(Item x);
 void string_parameter(Item x);
 void copy_string(Item x, Item y);
+void str_to_char(Item x);
 void arr_index(Item x, Item y);
 void field(Item x, Object y);
 void prologue(Object proc, int parblksize, int locblksize);

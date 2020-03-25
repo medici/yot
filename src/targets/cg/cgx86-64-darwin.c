@@ -698,6 +698,11 @@ gc_load_imm(int reg2, int reg1) {
 }
 
 void
+gc_load_immsb(int reg2, int reg1) {
+    sg("movsb\t(%s), %s", regs[reg2], regs[reg1]); 
+}
+
+void
 gc_load_imm2(int reg2, int reg1) {
     sg("movss\t(%s), %s", regs[reg2], FPURegs[reg1]); 
 }

@@ -15,26 +15,27 @@
     <link href="css/colors.css" rel="stylesheet">
 
           <style type="text/css">
-    a.sourceLine { display: inline-block; line-height: 1.25; }
-    a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-    a.sourceLine:empty { height: 1.2em; }
-    .sourceCode { overflow: visible; }
-    code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
     div.sourceCode { margin: 1em 0; }
     pre.sourceCode { margin: 0; }
     @media screen {
     div.sourceCode { overflow: auto; }
     }
     @media print {
-    code.sourceCode { white-space: pre-wrap; }
-    a.sourceLine { text-indent: -1em; padding-left: 1em; }
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
     }
-    pre.numberSource a.sourceLine
-      { position: relative; left: -4em; }
-    pre.numberSource a.sourceLine::before
-      { content: attr(title);
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
         position: relative; left: -1em; text-align: right; vertical-align: baseline;
-        border: none; pointer-events: all; display: inline-block;
+        border: none; display: inline-block;
         -webkit-touch-callout: none; -webkit-user-select: none;
         -khtml-user-select: none; -moz-user-select: none;
         -ms-user-select: none; user-select: none;
@@ -43,9 +44,9 @@
       }
     pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
     div.sourceCode
-      {  }
+      {   }
     @media screen {
-    a.sourceLine::before { text-decoration: underline; }
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
     }
     code span.al { color: #ff0000; font-weight: bold; } /* Alert */
     code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -92,7 +93,8 @@
               <li><a href="https://github.com/medici/yot">Github</a></li>
               </ul>
               <ul>
-              <li><a href="#语句">语句</a><ul>
+              <li><a href="#语句">语句</a>
+              <ul>
               <li><a href="#if">if</a></li>
               <li><a href="#for">for</a></li>
               <li><a href="#repeat">repeat</a></li>
@@ -105,147 +107,147 @@
 <h1 id="语句">语句</h1>
 <h2 id="if">if</h2>
 <p>if 语句可以按照以下格式进行使用:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode pascal"><code class="sourceCode pascal"><a class="sourceLine" id="cb1-1" title="1">    <span class="kw">if</span> condition <span class="kw">then</span></a>
-<a class="sourceLine" id="cb1-2" title="2">        statementSequence</a>
-<a class="sourceLine" id="cb1-3" title="3">    elsif condition <span class="kw">then</span></a>
-<a class="sourceLine" id="cb1-4" title="4">        statementSequence</a>
-<a class="sourceLine" id="cb1-5" title="5">    <span class="kw">else</span></a>
-<a class="sourceLine" id="cb1-6" title="6">        statementSequence</a>
-<a class="sourceLine" id="cb1-7" title="7">    <span class="kw">end</span>;</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode pascal"><code class="sourceCode pascal"><span id="cb1-1"><a href="#cb1-1"></a>    <span class="kw">if</span> condition <span class="kw">then</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a>        statementSequence</span>
+<span id="cb1-3"><a href="#cb1-3"></a>    elsif condition <span class="kw">then</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a>        statementSequence</span>
+<span id="cb1-5"><a href="#cb1-5"></a>    <span class="kw">else</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a>        statementSequence</span>
+<span id="cb1-7"><a href="#cb1-7"></a>    <span class="kw">end</span>;</span></code></pre></div>
 <p>例子：</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode pascal"><code class="sourceCode pascal"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">module</span> ifstatement</a>
-<a class="sourceLine" id="cb2-2" title="2">    <span class="kw">import</span> <span class="dt">Text</span>;</a>
-<a class="sourceLine" id="cb2-3" title="3"></a>
-<a class="sourceLine" id="cb2-4" title="4">    <span class="kw">const</span></a>
-<a class="sourceLine" id="cb2-5" title="5">        tru* = <span class="kw">true</span>;</a>
-<a class="sourceLine" id="cb2-6" title="6">        fls = <span class="kw">false</span>;</a>
-<a class="sourceLine" id="cb2-7" title="7">        </a>
-<a class="sourceLine" id="cb2-8" title="8"></a>
-<a class="sourceLine" id="cb2-9" title="9">    func main ()</a>
-<a class="sourceLine" id="cb2-10" title="10">        |</a>
-<a class="sourceLine" id="cb2-11" title="11">            <span class="kw">var</span> </a>
-<a class="sourceLine" id="cb2-12" title="12">                r, rr : <span class="dt">real</span>;</a>
-<a class="sourceLine" id="cb2-13" title="13">        |</a>
-<a class="sourceLine" id="cb2-14" title="14"></a>
-<a class="sourceLine" id="cb2-15" title="15">        </a>
-<a class="sourceLine" id="cb2-16" title="16">        r := <span class="dv">1.2</span>;</a>
-<a class="sourceLine" id="cb2-17" title="17">        rr := <span class="dv">3.6</span>;</a>
-<a class="sourceLine" id="cb2-18" title="18"></a>
-<a class="sourceLine" id="cb2-19" title="19">        </a>
-<a class="sourceLine" id="cb2-20" title="20">        <span class="kw">if</span> r = rr <span class="kw">then</span></a>
-<a class="sourceLine" id="cb2-21" title="21">            r := <span class="dv">2.8</span></a>
-<a class="sourceLine" id="cb2-22" title="22">        <span class="kw">end</span>;</a>
-<a class="sourceLine" id="cb2-23" title="23"></a>
-<a class="sourceLine" id="cb2-24" title="24"></a>
-<a class="sourceLine" id="cb2-25" title="25">        <span class="kw">if</span> r &lt; rr <span class="kw">then</span></a>
-<a class="sourceLine" id="cb2-26" title="26">            r := <span class="dv">3.8</span></a>
-<a class="sourceLine" id="cb2-27" title="27">        elsif r = rr <span class="kw">then</span></a>
-<a class="sourceLine" id="cb2-28" title="28">            r := <span class="dv">3.8</span></a>
-<a class="sourceLine" id="cb2-29" title="29">        <span class="kw">else</span></a>
-<a class="sourceLine" id="cb2-30" title="30">            r := <span class="dv">4.8</span></a>
-<a class="sourceLine" id="cb2-31" title="31">        <span class="kw">end</span>;</a>
-<a class="sourceLine" id="cb2-32" title="32">        <span class="dt">Text</span>.WriteReal(r);</a>
-<a class="sourceLine" id="cb2-33" title="33">        <span class="dt">Text</span>.WriteLn();</a>
-<a class="sourceLine" id="cb2-34" title="34">    <span class="kw">end</span>;</a>
-<a class="sourceLine" id="cb2-35" title="35"></a>
-<a class="sourceLine" id="cb2-36" title="36"><span class="kw">end</span>.</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode pascal"><code class="sourceCode pascal"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">module</span> ifstatement</span>
+<span id="cb2-2"><a href="#cb2-2"></a>    <span class="kw">import</span> <span class="dt">Text</span>;</span>
+<span id="cb2-3"><a href="#cb2-3"></a></span>
+<span id="cb2-4"><a href="#cb2-4"></a>    <span class="kw">const</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a>        tru* = <span class="kw">true</span>;</span>
+<span id="cb2-6"><a href="#cb2-6"></a>        fls = <span class="kw">false</span>;</span>
+<span id="cb2-7"><a href="#cb2-7"></a>        </span>
+<span id="cb2-8"><a href="#cb2-8"></a></span>
+<span id="cb2-9"><a href="#cb2-9"></a>    func main ()</span>
+<span id="cb2-10"><a href="#cb2-10"></a>        |</span>
+<span id="cb2-11"><a href="#cb2-11"></a>            <span class="kw">var</span> </span>
+<span id="cb2-12"><a href="#cb2-12"></a>                r, rr : <span class="dt">real</span>;</span>
+<span id="cb2-13"><a href="#cb2-13"></a>        |</span>
+<span id="cb2-14"><a href="#cb2-14"></a></span>
+<span id="cb2-15"><a href="#cb2-15"></a>        </span>
+<span id="cb2-16"><a href="#cb2-16"></a>        r := <span class="dv">1.2</span>;</span>
+<span id="cb2-17"><a href="#cb2-17"></a>        rr := <span class="dv">3.6</span>;</span>
+<span id="cb2-18"><a href="#cb2-18"></a></span>
+<span id="cb2-19"><a href="#cb2-19"></a>        </span>
+<span id="cb2-20"><a href="#cb2-20"></a>        <span class="kw">if</span> r = rr <span class="kw">then</span></span>
+<span id="cb2-21"><a href="#cb2-21"></a>            r := <span class="dv">2.8</span></span>
+<span id="cb2-22"><a href="#cb2-22"></a>        <span class="kw">end</span>;</span>
+<span id="cb2-23"><a href="#cb2-23"></a></span>
+<span id="cb2-24"><a href="#cb2-24"></a></span>
+<span id="cb2-25"><a href="#cb2-25"></a>        <span class="kw">if</span> r &lt; rr <span class="kw">then</span></span>
+<span id="cb2-26"><a href="#cb2-26"></a>            r := <span class="dv">3.8</span></span>
+<span id="cb2-27"><a href="#cb2-27"></a>        elsif r = rr <span class="kw">then</span></span>
+<span id="cb2-28"><a href="#cb2-28"></a>            r := <span class="dv">3.8</span></span>
+<span id="cb2-29"><a href="#cb2-29"></a>        <span class="kw">else</span></span>
+<span id="cb2-30"><a href="#cb2-30"></a>            r := <span class="dv">4.8</span></span>
+<span id="cb2-31"><a href="#cb2-31"></a>        <span class="kw">end</span>;</span>
+<span id="cb2-32"><a href="#cb2-32"></a>        <span class="dt">Text</span>.WriteReal(r);</span>
+<span id="cb2-33"><a href="#cb2-33"></a>        <span class="dt">Text</span>.WriteLn();</span>
+<span id="cb2-34"><a href="#cb2-34"></a>    <span class="kw">end</span>;</span>
+<span id="cb2-35"><a href="#cb2-35"></a></span>
+<span id="cb2-36"><a href="#cb2-36"></a><span class="kw">end</span>.</span></code></pre></div>
 <h2 id="for">for</h2>
 <p>for 循环格式如下：</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode pascal"><code class="sourceCode pascal"><a class="sourceLine" id="cb3-1" title="1">    <span class="kw">for</span> ident := expresson <span class="kw">to</span> expresion [by constExpression] <span class="kw">do</span></a>
-<a class="sourceLine" id="cb3-2" title="2">        statementSequence</a>
-<a class="sourceLine" id="cb3-3" title="3">    <span class="kw">end</span>;</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode pascal"><code class="sourceCode pascal"><span id="cb3-1"><a href="#cb3-1"></a>    <span class="kw">for</span> ident := expresson <span class="kw">to</span> expresion [by constExpression] <span class="kw">do</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>        statementSequence</span>
+<span id="cb3-3"><a href="#cb3-3"></a>    <span class="kw">end</span>;</span></code></pre></div>
 <p>例子：</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode pascal"><code class="sourceCode pascal"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">module</span> forstatement</a>
-<a class="sourceLine" id="cb4-2" title="2">    <span class="kw">import</span> <span class="dt">Text</span>;</a>
-<a class="sourceLine" id="cb4-3" title="3">    </a>
-<a class="sourceLine" id="cb4-4" title="4">    func main() </a>
-<a class="sourceLine" id="cb4-5" title="5">        |</a>
-<a class="sourceLine" id="cb4-6" title="6">            <span class="kw">var</span> i, j,z : <span class="dt">integer</span>;</a>
-<a class="sourceLine" id="cb4-7" title="7">        |</a>
-<a class="sourceLine" id="cb4-8" title="8"></a>
-<a class="sourceLine" id="cb4-9" title="9">        i := <span class="dv">10</span>;</a>
-<a class="sourceLine" id="cb4-10" title="10">        j := <span class="dv">0</span>;</a>
-<a class="sourceLine" id="cb4-11" title="11">        </a>
-<a class="sourceLine" id="cb4-12" title="12">        <span class="kw">for</span> z := <span class="dv">1</span> <span class="kw">to</span> i by <span class="dv">2</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb4-13" title="13">            j := j + <span class="dv">1</span></a>
-<a class="sourceLine" id="cb4-14" title="14">        <span class="kw">end</span>;</a>
-<a class="sourceLine" id="cb4-15" title="15"></a>
-<a class="sourceLine" id="cb4-16" title="16">        <span class="dt">Text</span>.WriteInt(j);</a>
-<a class="sourceLine" id="cb4-17" title="17">        <span class="dt">Text</span>.WriteLn;</a>
-<a class="sourceLine" id="cb4-18" title="18">        <span class="dt">Text</span>.WriteInt(i);</a>
-<a class="sourceLine" id="cb4-19" title="19">        <span class="dt">Text</span>.WriteLn;</a>
-<a class="sourceLine" id="cb4-20" title="20"></a>
-<a class="sourceLine" id="cb4-21" title="21">        i := <span class="dv">10</span>;</a>
-<a class="sourceLine" id="cb4-22" title="22">        j := <span class="dv">0</span>;</a>
-<a class="sourceLine" id="cb4-23" title="23">        </a>
-<a class="sourceLine" id="cb4-24" title="24">        <span class="kw">for</span> z := <span class="dv">1</span> <span class="kw">to</span> i  <span class="kw">do</span></a>
-<a class="sourceLine" id="cb4-25" title="25">            j := j + <span class="dv">1</span></a>
-<a class="sourceLine" id="cb4-26" title="26">        <span class="kw">end</span>;</a>
-<a class="sourceLine" id="cb4-27" title="27">    <span class="kw">end</span>;</a>
-<a class="sourceLine" id="cb4-28" title="28"><span class="kw">end</span>.</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode pascal"><code class="sourceCode pascal"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">module</span> forstatement</span>
+<span id="cb4-2"><a href="#cb4-2"></a>    <span class="kw">import</span> <span class="dt">Text</span>;</span>
+<span id="cb4-3"><a href="#cb4-3"></a>    </span>
+<span id="cb4-4"><a href="#cb4-4"></a>    func main() </span>
+<span id="cb4-5"><a href="#cb4-5"></a>        |</span>
+<span id="cb4-6"><a href="#cb4-6"></a>            <span class="kw">var</span> i, j,z : <span class="dt">integer</span>;</span>
+<span id="cb4-7"><a href="#cb4-7"></a>        |</span>
+<span id="cb4-8"><a href="#cb4-8"></a></span>
+<span id="cb4-9"><a href="#cb4-9"></a>        i := <span class="dv">10</span>;</span>
+<span id="cb4-10"><a href="#cb4-10"></a>        j := <span class="dv">0</span>;</span>
+<span id="cb4-11"><a href="#cb4-11"></a>        </span>
+<span id="cb4-12"><a href="#cb4-12"></a>        <span class="kw">for</span> z := <span class="dv">1</span> <span class="kw">to</span> i by <span class="dv">2</span> <span class="kw">do</span></span>
+<span id="cb4-13"><a href="#cb4-13"></a>            j := j + <span class="dv">1</span></span>
+<span id="cb4-14"><a href="#cb4-14"></a>        <span class="kw">end</span>;</span>
+<span id="cb4-15"><a href="#cb4-15"></a></span>
+<span id="cb4-16"><a href="#cb4-16"></a>        <span class="dt">Text</span>.WriteInt(j);</span>
+<span id="cb4-17"><a href="#cb4-17"></a>        <span class="dt">Text</span>.WriteLn;</span>
+<span id="cb4-18"><a href="#cb4-18"></a>        <span class="dt">Text</span>.WriteInt(i);</span>
+<span id="cb4-19"><a href="#cb4-19"></a>        <span class="dt">Text</span>.WriteLn;</span>
+<span id="cb4-20"><a href="#cb4-20"></a></span>
+<span id="cb4-21"><a href="#cb4-21"></a>        i := <span class="dv">10</span>;</span>
+<span id="cb4-22"><a href="#cb4-22"></a>        j := <span class="dv">0</span>;</span>
+<span id="cb4-23"><a href="#cb4-23"></a>        </span>
+<span id="cb4-24"><a href="#cb4-24"></a>        <span class="kw">for</span> z := <span class="dv">1</span> <span class="kw">to</span> i  <span class="kw">do</span></span>
+<span id="cb4-25"><a href="#cb4-25"></a>            j := j + <span class="dv">1</span></span>
+<span id="cb4-26"><a href="#cb4-26"></a>        <span class="kw">end</span>;</span>
+<span id="cb4-27"><a href="#cb4-27"></a>    <span class="kw">end</span>;</span>
+<span id="cb4-28"><a href="#cb4-28"></a><span class="kw">end</span>.</span></code></pre></div>
 <h2 id="repeat">repeat</h2>
 <p>repeat 语句会重复执行指定的语句，直到条件语句为 <code>true</code>。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode pascal"><code class="sourceCode pascal"><a class="sourceLine" id="cb5-1" title="1">    <span class="kw">repeat</span></a>
-<a class="sourceLine" id="cb5-2" title="2">        statementSequence</a>
-<a class="sourceLine" id="cb5-3" title="3">    util expression;</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode pascal"><code class="sourceCode pascal"><span id="cb5-1"><a href="#cb5-1"></a>    <span class="kw">repeat</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a>        statementSequence</span>
+<span id="cb5-3"><a href="#cb5-3"></a>    util expression;</span></code></pre></div>
 <p>statementSequence 至少会执行一次。例子：</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode pascal"><code class="sourceCode pascal"><a class="sourceLine" id="cb6-1" title="1"><span class="kw">module</span> repeatstatement</a>
-<a class="sourceLine" id="cb6-2" title="2">    <span class="kw">import</span> <span class="dt">Text</span>;</a>
-<a class="sourceLine" id="cb6-3" title="3"></a>
-<a class="sourceLine" id="cb6-4" title="4">    func main ()</a>
-<a class="sourceLine" id="cb6-5" title="5">        |</a>
-<a class="sourceLine" id="cb6-6" title="6">            <span class="kw">var</span> i, j : <span class="dt">integer</span>;</a>
-<a class="sourceLine" id="cb6-7" title="7">        |</a>
-<a class="sourceLine" id="cb6-8" title="8"></a>
-<a class="sourceLine" id="cb6-9" title="9">        i := <span class="dv">0</span>;</a>
-<a class="sourceLine" id="cb6-10" title="10">        j := <span class="dv">-99</span>;</a>
-<a class="sourceLine" id="cb6-11" title="11"></a>
-<a class="sourceLine" id="cb6-12" title="12">        <span class="kw">repeat</span> </a>
-<a class="sourceLine" id="cb6-13" title="13">            j := j + <span class="dv">2</span></a>
-<a class="sourceLine" id="cb6-14" title="14">        <span class="kw">until</span> j &gt;= i + <span class="dv">2</span>;</a>
-<a class="sourceLine" id="cb6-15" title="15"></a>
-<a class="sourceLine" id="cb6-16" title="16">        <span class="dt">Text</span>.WriteInt(j);</a>
-<a class="sourceLine" id="cb6-17" title="17">        <span class="dt">Text</span>.WriteLn;</a>
-<a class="sourceLine" id="cb6-18" title="18">    <span class="kw">end</span>;</a>
-<a class="sourceLine" id="cb6-19" title="19"><span class="kw">end</span>.</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode pascal"><code class="sourceCode pascal"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">module</span> repeatstatement</span>
+<span id="cb6-2"><a href="#cb6-2"></a>    <span class="kw">import</span> <span class="dt">Text</span>;</span>
+<span id="cb6-3"><a href="#cb6-3"></a></span>
+<span id="cb6-4"><a href="#cb6-4"></a>    func main ()</span>
+<span id="cb6-5"><a href="#cb6-5"></a>        |</span>
+<span id="cb6-6"><a href="#cb6-6"></a>            <span class="kw">var</span> i, j : <span class="dt">integer</span>;</span>
+<span id="cb6-7"><a href="#cb6-7"></a>        |</span>
+<span id="cb6-8"><a href="#cb6-8"></a></span>
+<span id="cb6-9"><a href="#cb6-9"></a>        i := <span class="dv">0</span>;</span>
+<span id="cb6-10"><a href="#cb6-10"></a>        j := <span class="dv">-99</span>;</span>
+<span id="cb6-11"><a href="#cb6-11"></a></span>
+<span id="cb6-12"><a href="#cb6-12"></a>        <span class="kw">repeat</span> </span>
+<span id="cb6-13"><a href="#cb6-13"></a>            j := j + <span class="dv">2</span></span>
+<span id="cb6-14"><a href="#cb6-14"></a>        <span class="kw">until</span> j &gt;= i + <span class="dv">2</span>;</span>
+<span id="cb6-15"><a href="#cb6-15"></a></span>
+<span id="cb6-16"><a href="#cb6-16"></a>        <span class="dt">Text</span>.WriteInt(j);</span>
+<span id="cb6-17"><a href="#cb6-17"></a>        <span class="dt">Text</span>.WriteLn;</span>
+<span id="cb6-18"><a href="#cb6-18"></a>    <span class="kw">end</span>;</span>
+<span id="cb6-19"><a href="#cb6-19"></a><span class="kw">end</span>.</span></code></pre></div>
 <h2 id="while">while</h2>
 <p>while 语句， 只要任何的布尔表达式为<code>true</code>，相应的语句串便会执行。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode pascal"><code class="sourceCode pascal"><a class="sourceLine" id="cb7-1" title="1">    <span class="kw">while</span> expression <span class="kw">do</span></a>
-<a class="sourceLine" id="cb7-2" title="2">        statementSequence</a>
-<a class="sourceLine" id="cb7-3" title="3">        <span class="co">{ elsif expression do statementSequence}</span></a>
-<a class="sourceLine" id="cb7-4" title="4">    <span class="kw">end</span></a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode pascal"><code class="sourceCode pascal"><span id="cb7-1"><a href="#cb7-1"></a>    <span class="kw">while</span> expression <span class="kw">do</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a>        statementSequence</span>
+<span id="cb7-3"><a href="#cb7-3"></a>        <span class="co">{ elsif expression do statementSequence}</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a>    <span class="kw">end</span></span></code></pre></div>
 <p>例子：</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode pascal"><code class="sourceCode pascal"><a class="sourceLine" id="cb8-1" title="1"><span class="kw">module</span> whilestatement</a>
-<a class="sourceLine" id="cb8-2" title="2">    <span class="kw">import</span> <span class="dt">Text</span>;</a>
-<a class="sourceLine" id="cb8-3" title="3"></a>
-<a class="sourceLine" id="cb8-4" title="4">    func main() </a>
-<a class="sourceLine" id="cb8-5" title="5">        |</a>
-<a class="sourceLine" id="cb8-6" title="6">            <span class="kw">var</span> i, j : <span class="dt">integer</span>;</a>
-<a class="sourceLine" id="cb8-7" title="7">        |</a>
-<a class="sourceLine" id="cb8-8" title="8"></a>
-<a class="sourceLine" id="cb8-9" title="9">        i := <span class="dv">10</span>;</a>
-<a class="sourceLine" id="cb8-10" title="10">        j := <span class="dv">0</span>;</a>
-<a class="sourceLine" id="cb8-11" title="11"></a>
-<a class="sourceLine" id="cb8-12" title="12">        <span class="kw">while</span> i &gt; j <span class="kw">do</span></a>
-<a class="sourceLine" id="cb8-13" title="13">            j := j + <span class="dv">1</span></a>
-<a class="sourceLine" id="cb8-14" title="14">        <span class="kw">end</span>;</a>
-<a class="sourceLine" id="cb8-15" title="15">        </a>
-<a class="sourceLine" id="cb8-16" title="16">        i := <span class="dv">10</span>;</a>
-<a class="sourceLine" id="cb8-17" title="17">        j := <span class="dv">0</span>;</a>
-<a class="sourceLine" id="cb8-18" title="18">        <span class="kw">while</span> i &gt; j <span class="kw">do</span></a>
-<a class="sourceLine" id="cb8-19" title="19">            j := j + <span class="dv">1</span></a>
-<a class="sourceLine" id="cb8-20" title="20">        elsif j &lt; <span class="dv">20</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb8-21" title="21">            j := j + <span class="dv">1</span></a>
-<a class="sourceLine" id="cb8-22" title="22">        elsif i &gt; <span class="dv">1</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb8-23" title="23">            i := i - <span class="dv">1</span></a>
-<a class="sourceLine" id="cb8-24" title="24">        <span class="kw">end</span>;</a>
-<a class="sourceLine" id="cb8-25" title="25"></a>
-<a class="sourceLine" id="cb8-26" title="26">        <span class="dt">Text</span>.WriteInt(j);</a>
-<a class="sourceLine" id="cb8-27" title="27">        <span class="dt">Text</span>.WriteLn;</a>
-<a class="sourceLine" id="cb8-28" title="28">        <span class="dt">Text</span>.WriteInt(i);</a>
-<a class="sourceLine" id="cb8-29" title="29">        <span class="dt">Text</span>.WriteLn</a>
-<a class="sourceLine" id="cb8-30" title="30">    <span class="kw">end</span>;</a>
-<a class="sourceLine" id="cb8-31" title="31"><span class="kw">end</span>.</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode pascal"><code class="sourceCode pascal"><span id="cb8-1"><a href="#cb8-1"></a><span class="kw">module</span> whilestatement</span>
+<span id="cb8-2"><a href="#cb8-2"></a>    <span class="kw">import</span> <span class="dt">Text</span>;</span>
+<span id="cb8-3"><a href="#cb8-3"></a></span>
+<span id="cb8-4"><a href="#cb8-4"></a>    func main() </span>
+<span id="cb8-5"><a href="#cb8-5"></a>        |</span>
+<span id="cb8-6"><a href="#cb8-6"></a>            <span class="kw">var</span> i, j : <span class="dt">integer</span>;</span>
+<span id="cb8-7"><a href="#cb8-7"></a>        |</span>
+<span id="cb8-8"><a href="#cb8-8"></a></span>
+<span id="cb8-9"><a href="#cb8-9"></a>        i := <span class="dv">10</span>;</span>
+<span id="cb8-10"><a href="#cb8-10"></a>        j := <span class="dv">0</span>;</span>
+<span id="cb8-11"><a href="#cb8-11"></a></span>
+<span id="cb8-12"><a href="#cb8-12"></a>        <span class="kw">while</span> i &gt; j <span class="kw">do</span></span>
+<span id="cb8-13"><a href="#cb8-13"></a>            j := j + <span class="dv">1</span></span>
+<span id="cb8-14"><a href="#cb8-14"></a>        <span class="kw">end</span>;</span>
+<span id="cb8-15"><a href="#cb8-15"></a>        </span>
+<span id="cb8-16"><a href="#cb8-16"></a>        i := <span class="dv">10</span>;</span>
+<span id="cb8-17"><a href="#cb8-17"></a>        j := <span class="dv">0</span>;</span>
+<span id="cb8-18"><a href="#cb8-18"></a>        <span class="kw">while</span> i &gt; j <span class="kw">do</span></span>
+<span id="cb8-19"><a href="#cb8-19"></a>            j := j + <span class="dv">1</span></span>
+<span id="cb8-20"><a href="#cb8-20"></a>        elsif j &lt; <span class="dv">20</span> <span class="kw">do</span></span>
+<span id="cb8-21"><a href="#cb8-21"></a>            j := j + <span class="dv">1</span></span>
+<span id="cb8-22"><a href="#cb8-22"></a>        elsif i &gt; <span class="dv">1</span> <span class="kw">do</span></span>
+<span id="cb8-23"><a href="#cb8-23"></a>            i := i - <span class="dv">1</span></span>
+<span id="cb8-24"><a href="#cb8-24"></a>        <span class="kw">end</span>;</span>
+<span id="cb8-25"><a href="#cb8-25"></a></span>
+<span id="cb8-26"><a href="#cb8-26"></a>        <span class="dt">Text</span>.WriteInt(j);</span>
+<span id="cb8-27"><a href="#cb8-27"></a>        <span class="dt">Text</span>.WriteLn;</span>
+<span id="cb8-28"><a href="#cb8-28"></a>        <span class="dt">Text</span>.WriteInt(i);</span>
+<span id="cb8-29"><a href="#cb8-29"></a>        <span class="dt">Text</span>.WriteLn</span>
+<span id="cb8-30"><a href="#cb8-30"></a>    <span class="kw">end</span>;</span>
+<span id="cb8-31"><a href="#cb8-31"></a><span class="kw">end</span>.</span></code></pre></div>
           </div>
         </div>
 

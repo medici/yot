@@ -75,6 +75,7 @@ void gc_load(int offset, int reg);
 void gc_load_integer(int v, int reg);
 void gc_load_uinteger(unsigned int v, int reg);
 void gc_load_imm(int reg2, int reg1);
+void gc_load_immsb(int reg2, int reg1);
 void gc_load_imm2(int reg2, int reg1);
 void gc_load_offset(int reg1);
 void gc_load_offset2(int reg2, int reg1);

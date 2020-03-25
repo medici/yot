@@ -74,6 +74,10 @@ gparamters(int nofpar, Object params) {
             gc_store_reg(j + 1, offset + WORDSIZE);
             ++j;
             ++j;
+        } else if (params->type->form == FBOOLEAN) {
+            offset -= params->type->size * ( j + 1);
+            gc_store_reg(j, offset);
+            ++j;
         }
         params = params->next;
     }
@@ -497,6 +501,8 @@ load(Item x) {
                 gc_load_imm2(x->r, RHF);
                 --RH;
                 incFPUR();
+             } else if (x->type->form == FCHAR) {
+                gc_load_immsb(x->r, x->r);
              } else {
                 gc_load_imm(x->r, x->r);
              }
@@ -542,6 +548,7 @@ load_adr(Item x) {
 
 void
 load_string_adr(Item x) {
+    gtext();
     x->r = RH;
     gc_leaq2(x->a, x->r);
     incR();
@@ -606,7 +613,7 @@ call(Item x, int r[2], char *name) {
     int nofpar = x->type->nofpar;
     int j;
     for (j =0; j<nofpar; j++) {
-        if (dsc->type->form == FINTEGER) {
+        if (dsc->type->form == FINTEGER || dsc->type->form == FBOOLEAN) {
             RH = RH - 1;
         } else if (dsc->type->form == FREAL) {
             RHF = RHF - 1;
@@ -974,6 +981,12 @@ copy_string(Item x, Item y) {
     gc_cmp2(RH);
     gc_jcmp(NEQ - EQL, lab);
     RH = RH - 2;
+}
+
+void
+str_to_char(Item x) {
+    x->type = CharType;
+    x->a = Text[0];
 }
 
 void

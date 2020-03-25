@@ -61,6 +61,7 @@ module Text
 	end;
 	*)
 
+
 	func WriteString*(s: array of char)
 		|
 			var i: integer;
@@ -70,6 +71,14 @@ module Text
 			Write(s[i]);
 			i := i + 1
 		end;
+	end;
+
+	func WriteBool*(b : boolean)
+		if (b = false) then
+			WriteString("false")
+		else
+			WriteString("true")
+		end
 	end;
 
 	func WriteReal*(x: real)

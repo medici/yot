@@ -1,32 +1,45 @@
 module char
+	import Text;
+
 	const 
 		A* = 41x;
 		LF = 0ax;
-
+		C  = "A";
 	var c2 : char;
 
 	func main ()
 		|
-			const d = 64x; i = 1;
+			const d = 64x; i = 1; 
 			var c, ch : char;
+				bool : boolean;
 		|
 
-		c := 61x;
-		c2 := 62x;
-		Write(d);
-		Write(LF);
+		c2 := C;
 		Write(c2);
 		Write(LF);
+		Text.WriteInt(Ord(c2));
+		Write(LF);
+		bool := A # "A";
+		Text.WriteBool(~true);
+		Write(LF);
+		(*
+		c := 61x;
+		
+		ch := 63x;
+		Write(d);
+		Write(LF);
+		;
 		Write(A);
 		Write(LF);
 		Write(c);
-		WriteLn;
+		Write(LF);
 
 		if (d > c) & (c < d) or ((c # d) or true & ((c > d) & (c > d))) then
             c := 65x;
         end;
         Write(c);
-        WriteLn;
+        Write(LF);
+    *)
 	end;
 
 end.

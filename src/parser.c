@@ -446,9 +446,29 @@ expression() {
                 int_relation(rel, x, y);
             } else if(x->type->form == FREAL) {
                 real_relation(rel, x, y);
-            } else {
+            } else if (x->type->form == FBOOLEAN) {
+                if (rel <= NEQ) {
+                    int_relation(rel, x, y);
+                } else {
+                    mark("only = or #", NULL);
+                }
+            }  else {
                 mark("illegal comparison", NULL);
             }
+        } else if (
+            x->type->form == FCHAR &&
+            y->type->form == FSTRING &&
+            y->b == 2
+        ) {
+            str_to_char(y);
+            int_relation(rel, x, y);
+        } else if (
+            y->type->form == FCHAR &&
+            x->type->form == FSTRING &&
+            x->b == 2
+        ) {
+            str_to_char(x);
+            int_relation(rel, x, y);
         }
         
         x->type = BoolType;
@@ -603,51 +623,23 @@ stat_sequence() {
                         y = convert_int_to_real(y);
                         store(x, y);
                     } else if (x->type->form == FBOOLEAN) {
-                        // if (y->a == 0) { // or
-                        //     printf("or\n");
-                        //     if (y->b != 0) {
-                        //         Fixup(y->b);
-                        //     }
-                        // } else if(y->a < y->b) {
-                        //     printf("sdfdsf1111\n");
-                        //     Fixup(y->a);
-                        //     FJump(y->b);
-                        //     Fixup(y->b);
-                        // } else { //  &
-                        //     printf("a %d, b %d\n", y->a, y->b);
-                        //     Fixup(y->a);
-                            
-                        //     if (y->b != 0) {
-                        //         Fixup(y->b);
-                        //     }
-                        // }
-                        // g_setne(y);
-
-                        // if (y->mode == CCONST) {
-                        //     load(y);
-                        //     g_cmp2(y->r);
-                        // } else {
-                        //     if (y->a != 0) {
-                        //         Fixup(y->a);
-                        //     }
-
-                        //     if (y->a != 0 && y->b !=0) {
-                        //         FJump(y->b);
-                        //     }
-
-                        //     //g_setne(y);
-                        //     if (y->b != 0) {
-                        //         Fixup(y->b);
-                        //     }
-                        // }
-                        // g_setne(y);
-
                         load_compare_expression(y);
                         store(x, y);
-                    } else if (x->type->form == FCHAR) {
+                    } else if (x->type->form == FCHAR && y->type == x->type) {
                         store(x, y);
-                    } else if (x->type->form == FARRAY && x->type->base->form == FCHAR && y->type->form == FSTRING) {
+                    } else if (
+                        x->type->form == FARRAY && 
+                        x->type->base->form == FCHAR && 
+                        y->type->form == FSTRING
+                    ) {
                         copy_string(x, y);
+                    } else if (
+                        x->type->form == FCHAR &&
+                        y->type->form == FSTRING &&
+                        y->b == 2
+                    ) {
+                        str_to_char(y);
+                        store(x, y);
                     }
                 } else if (Symbol == LPAREN) {
                     get();
@@ -1118,17 +1110,19 @@ declarations(int locblksize) {
             }
             x = expression();
             if (x->mode == CCONST) {
-                obj->value = x->a;
                 obj->level = CurrentLevel;
-                obj->type = x->type;
-
-                if (x->type == RealType) {
+                obj->value = x->a;
+                if (x->type->form == FSTRING && x->b == 2) {
+                    str_to_char(x);
+                    obj->value = x->a;
+                } else if (x->type == RealType) {
                     int lab = label();
                     glab(lab);
                     // obj->class = CLAB;
                     g_def_IEEE754_float(obj->value);
                     obj->value = lab;
                 }
+                obj->type = x->type;
             } else {
                 mark("%s expression not constant", x->name);
                 obj->type = IntType;
@@ -1214,6 +1208,9 @@ module_declarations() {
             }
             x = expression();
             if (x->mode == CCONST) {
+                if (x->type->form == FSTRING && x->b == 2) {
+                    str_to_char(x);
+                }
                 obj->value = x->a;
                 obj->level = x->b;
                 obj->type = x->type;

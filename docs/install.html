@@ -15,26 +15,27 @@
     <link href="css/colors.css" rel="stylesheet">
 
           <style type="text/css">
-    a.sourceLine { display: inline-block; line-height: 1.25; }
-    a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-    a.sourceLine:empty { height: 1.2em; }
-    .sourceCode { overflow: visible; }
-    code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
     div.sourceCode { margin: 1em 0; }
     pre.sourceCode { margin: 0; }
     @media screen {
     div.sourceCode { overflow: auto; }
     }
     @media print {
-    code.sourceCode { white-space: pre-wrap; }
-    a.sourceLine { text-indent: -1em; padding-left: 1em; }
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
     }
-    pre.numberSource a.sourceLine
-      { position: relative; left: -4em; }
-    pre.numberSource a.sourceLine::before
-      { content: attr(title);
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
         position: relative; left: -1em; text-align: right; vertical-align: baseline;
-        border: none; pointer-events: all; display: inline-block;
+        border: none; display: inline-block;
         -webkit-touch-callout: none; -webkit-user-select: none;
         -khtml-user-select: none; -moz-user-select: none;
         -ms-user-select: none; user-select: none;
@@ -43,9 +44,9 @@
       }
     pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
     div.sourceCode
-      {  }
+      {   }
     @media screen {
-    a.sourceLine::before { text-decoration: underline; }
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
     }
     code span.al { color: #ff0000; font-weight: bold; } /* Alert */
     code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -92,10 +93,12 @@
               <li><a href="https://github.com/medici/yot">Github</a></li>
               </ul>
               <ul>
-              <li><a href="#安装">安装</a><ul>
+              <li><a href="#安装">安装</a>
+              <ul>
               <li><a href="#mac64bit-linux64bit">Mac(64bit) &amp; Linux(64bit)</a></li>
               <li><a href="#运行-hello-world">运行 “Hello World”</a></li>
               <li><a href="#windows">Windows</a></li>
+              <li><a href="#编译成汇编">编译成汇编</a></li>
               </ul></li>
               </ul>
           </div>
@@ -103,25 +106,59 @@
           <div class="span9 body">
 <h1 id="安装">安装</h1>
 <h2 id="mac64bit-linux64bit">Mac(64bit) &amp; Linux(64bit)</h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" title="1"><span class="op">&gt;&gt;&gt;</span> <span class="ex">./configure</span></a>
-<a class="sourceLine" id="cb1-2" title="2"><span class="op">&gt;&gt;&gt;</span> <span class="bu">cd</span> src</a>
-<a class="sourceLine" id="cb1-3" title="3"><span class="op">&gt;&gt;&gt;</span> <span class="fu">make</span></a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="ex">./configure</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">cd</span> src</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="op">&gt;&gt;&gt;</span> <span class="fu">make</span></span></code></pre></div>
 <h2 id="运行-hello-world">运行 “Hello World”</h2>
-<div class="sourceCode" id="cb2"><pre class="sourceCode pascal"><code class="sourceCode pascal"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">module</span> hello_world</a>
-<a class="sourceLine" id="cb2-2" title="2"><span class="kw">import</span> <span class="dt">Text</span>;</a>
-<a class="sourceLine" id="cb2-3" title="3"></a>
-<a class="sourceLine" id="cb2-4" title="4">func main()</a>
-<a class="sourceLine" id="cb2-5" title="5">    |</a>
-<a class="sourceLine" id="cb2-6" title="6">        <span class="kw">const</span> str = &quot;hello world&quot;;</a>
-<a class="sourceLine" id="cb2-7" title="7">    |</a>
-<a class="sourceLine" id="cb2-8" title="8">    <span class="dt">Text</span>.WriteString(str);</a>
-<a class="sourceLine" id="cb2-9" title="9">    <span class="dt">Text</span>.WriteLn</a>
-<a class="sourceLine" id="cb2-10" title="10"><span class="kw">end</span>;</a></code></pre></div>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb3-1" title="1"><span class="op">&gt;&gt;&gt;</span> <span class="ex">./yot</span> -o hello_world.yot</a>
-<a class="sourceLine" id="cb3-2" title="2"><span class="op">&gt;&gt;&gt;</span> <span class="ex">./hello_world</span></a>
-<a class="sourceLine" id="cb3-3" title="3"><span class="ex">Hello</span> World</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode pascal"><code class="sourceCode pascal"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">module</span> hello_world</span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="kw">import</span> <span class="dt">Text</span>;</span>
+<span id="cb2-3"><a href="#cb2-3"></a></span>
+<span id="cb2-4"><a href="#cb2-4"></a>func main()</span>
+<span id="cb2-5"><a href="#cb2-5"></a>    |</span>
+<span id="cb2-6"><a href="#cb2-6"></a>        <span class="kw">const</span> str = &quot;hello world&quot;;</span>
+<span id="cb2-7"><a href="#cb2-7"></a>    |</span>
+<span id="cb2-8"><a href="#cb2-8"></a>    <span class="dt">Text</span>.WriteString(str);</span>
+<span id="cb2-9"><a href="#cb2-9"></a>    <span class="dt">Text</span>.WriteLn</span>
+<span id="cb2-10"><a href="#cb2-10"></a><span class="kw">end</span>;</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="ex">./yot</span> -o hello_world.yot</span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="op">&gt;&gt;&gt;</span> <span class="ex">./hello_world</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="ex">Hello</span> World</span></code></pre></div>
 <h2 id="windows">Windows</h2>
 <p>正在开发中。</p>
+<h2 id="编译成汇编">编译成汇编</h2>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="ex">./yot</span> -S hello_world.yot</span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="op">&gt;&gt;&gt;</span> <span class="fu">cat</span> hello_world.s</span>
+<span id="cb4-3"><a href="#cb4-3"></a></span>
+<span id="cb4-4"><a href="#cb4-4"></a>    <span class="ex">.text</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a>    <span class="ex">.data</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a><span class="ex">L1</span>:</span>
+<span id="cb4-7"><a href="#cb4-7"></a>    <span class="ex">.byte</span>   104</span>
+<span id="cb4-8"><a href="#cb4-8"></a>    <span class="ex">.byte</span>   101</span>
+<span id="cb4-9"><a href="#cb4-9"></a>    <span class="ex">.byte</span>   108</span>
+<span id="cb4-10"><a href="#cb4-10"></a>    <span class="ex">.byte</span>   108</span>
+<span id="cb4-11"><a href="#cb4-11"></a>    <span class="ex">.byte</span>   111</span>
+<span id="cb4-12"><a href="#cb4-12"></a>    <span class="ex">.byte</span>   32</span>
+<span id="cb4-13"><a href="#cb4-13"></a>    <span class="ex">.byte</span>   119</span>
+<span id="cb4-14"><a href="#cb4-14"></a>    <span class="ex">.byte</span>   111</span>
+<span id="cb4-15"><a href="#cb4-15"></a>    <span class="ex">.byte</span>   114</span>
+<span id="cb4-16"><a href="#cb4-16"></a>    <span class="ex">.byte</span>   108</span>
+<span id="cb4-17"><a href="#cb4-17"></a>    <span class="ex">.byte</span>   100</span>
+<span id="cb4-18"><a href="#cb4-18"></a>    <span class="ex">.byte</span>   0</span>
+<span id="cb4-19"><a href="#cb4-19"></a>    <span class="ex">.byte</span>   0</span>
+<span id="cb4-20"><a href="#cb4-20"></a>    <span class="ex">.byte</span>   0</span>
+<span id="cb4-21"><a href="#cb4-21"></a>    <span class="ex">.byte</span>   0</span>
+<span id="cb4-22"><a href="#cb4-22"></a>    <span class="ex">.byte</span>   0</span>
+<span id="cb4-23"><a href="#cb4-23"></a>    <span class="ex">.byte</span>   0</span>
+<span id="cb4-24"><a href="#cb4-24"></a>    <span class="ex">.text</span></span>
+<span id="cb4-25"><a href="#cb4-25"></a>    <span class="ex">.globl</span>  Ymain</span>
+<span id="cb4-26"><a href="#cb4-26"></a><span class="ex">Ymain</span>:  pushq   %rbp</span>
+<span id="cb4-27"><a href="#cb4-27"></a>    <span class="ex">movq</span>    %rsp,%rbp</span>
+<span id="cb4-28"><a href="#cb4-28"></a>    <span class="ex">leaq</span>    L1(%rip), <span class="ex">%rdi</span></span>
+<span id="cb4-29"><a href="#cb4-29"></a>    <span class="ex">movq</span>    <span class="va">$0</span>, %rsi</span>
+<span id="cb4-30"><a href="#cb4-30"></a>    <span class="ex">call</span>    YWriteString</span>
+<span id="cb4-31"><a href="#cb4-31"></a>    <span class="ex">call</span>    YWriteLn</span>
+<span id="cb4-32"><a href="#cb4-32"></a>    <span class="ex">popq</span>    %rbp</span>
+<span id="cb4-33"><a href="#cb4-33"></a>    <span class="ex">ret</span></span></code></pre></div>
           </div>
         </div>
 
