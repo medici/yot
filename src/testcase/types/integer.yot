@@ -1,8 +1,8 @@
 module integer
-    import types;
+    import types, Text;
     
     const
-        wordsize* = 666;
+        wordsize* = 2147483647;
         wordsize1 = 6661;
 
     var 
@@ -19,39 +19,40 @@ module integer
             var 
                 ii : integer3;
                 i  : integer2;
-                j  : integer;
+                j  : integer3;
         |
-        ii := 1h;
-        WriteInt(ii);
-        WriteLn;
-
+        
+        ii := 0fffh;
+        Text.WriteInt(ii);
+        Text.WriteLn;
+(*
         ii := 20h;
-        WriteInt(ii);
-        WriteLn;
-
-        WriteInt(wordsize);
-        WriteLn;
-        WriteInt(wordsize1);
-        WriteLn;
+        Text.WriteInt(ii);
+        Text.WriteLn;
+       
+        Text.WriteInt(wordsize);
+        Text.WriteLn;
+        Text.WriteInt(wordsize1);
+        Text.WriteLn;
         ii := 22;
-        WriteInt(ii);
-        WriteLn;
+        Text.WriteInt(ii);
+        Text.WriteLn;
         jj := 8;
-        WriteInt(jj);
-        WriteLn;
+        Text.WriteInt(jj);
+        Text.WriteLn;
         ii := 22 mod 8;
-        WriteInt(ii);
-        WriteLn;
+        Text.WriteInt(ii);
+        Text.WriteLn;
         i := 66;
-        WriteInt(i);
-        WriteLn;
+        Text.WriteInt(i);
+        Text.WriteLn;
         j := 55;
 
         i := i div j + 12 + 13 * i * j;
-        WriteInt(i);
-        WriteLn;
+        Text.WriteInt(i);
+        Text.WriteLn;
         i := i / j;
-        WriteInt(i);
-        WriteLn
+        Text.WriteInt(i);
+        Text.WriteLn *)
     end;
 end.

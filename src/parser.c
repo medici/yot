@@ -18,6 +18,7 @@ Object dummy;
 
 Item expression();
 Type type();
+void param_list(Item x);
 
 void
 increment_level(int n) {
@@ -117,6 +118,11 @@ check_export() {
     } else {
         return FALSE;
     }
+}
+
+bool
+is_extension(Type t0, Type t1) {
+    return (t0 == t1) || ((t1 != NULL) && is_extension(t0, t1->base));
 }
 
 Item
@@ -285,12 +291,26 @@ factor() {
         } else {
             x = make_item(obj);
             selector(x);
+
+            if (Symbol == LPAREN) {
+                get();
+                if (x->type->form == FFUNC && x->type->base->form != FNOTYPE) {
+                    int* r = pre_call(x);
+                    param_list(x);
+                    call(x, r, x->name);
+                    x->type = x->type->base;
+                } else {
+                    mark("%s not a function", x->name);
+                    param_list(x);
+                }
+            }
         }
        
         return x;
     } else if (Symbol == STRING) {
+        Item x = make_strlit_item(Text);
         get();
-        return make_strlit_item(Text);
+        return x;
     } else if(Symbol == LPAREN) {
         get();
         Item x = expression();
@@ -476,17 +496,29 @@ expression() {
     return x;
 }
 
-void 
-value_param(Item x) {
-    load(x);
+bool
+compare_types(Type t0, Type t1, bool varpar) {
+    return t0 == t1 || (t0->form == FRECORD && t1->form == FRECORD && is_extension(t0, t1)) ;
 }
 
 void
 parameter(Object par) {
+    bool varpar;
     Item x;
+
     x = expression();
     if (par != NULL) {
-        if (
+        varpar = par->class == CPAR;
+        if (compare_types(par->type, x->type, varpar)) {
+            if (!varpar) {
+                value_param(x);
+            } else {
+                if (!par->rdo) {
+                    check_read_only(x);
+                }
+                var_param(x, par->type);
+            }
+        } else if (
             x->type->form == FARRAY && 
             par->type->form == FARRAY && 
             x->type->base->form == par->type->base->form &&
@@ -616,16 +648,16 @@ stat_sequence() {
                     get();
                     y = expression();
 
-                    if (x->type == IntType) {
+                    if (x->type->form == FINTEGER) {
                         y = convert_real_to_int(y);
                         store(x, y);
-                    } else if(x->type == RealType) {
+                    } else if(x->type->form == FREAL) {
                         y = convert_int_to_real(y);
                         store(x, y);
                     } else if (x->type->form == FBOOLEAN) {
                         load_compare_expression(y);
                         store(x, y);
-                    } else if (x->type->form == FCHAR && y->type == x->type) {
+                    } else if (x->type->form == FCHAR && y->type->form == x->type->form) {
                         store(x, y);
                     } else if (
                         x->type->form == FARRAY && 
@@ -640,6 +672,8 @@ stat_sequence() {
                     ) {
                         str_to_char(y);
                         store(x, y);
+                    } else if (x->type->form == FFUNC) {
+                        printf("sss\n");
                     }
                 } else if (Symbol == LPAREN) {
                     get();
@@ -889,6 +923,7 @@ array_type(Type tp) {
         }
     } else if (Symbol == COMMA) {
         get();
+        tp->base = checked_malloc(sizeof(*(tp->base)));
         array_type(tp->base);
     } else {
         mark("%s missing of", Text); 
@@ -991,8 +1026,10 @@ fp_section(int *adr, int *nofpar) {
 
     if ((tp->form == FARRAY && tp->len < 0) || tp->form == FRECORD) {
         parsize = 2 * WORDSIZE;  /*open array or record, needs second word for length or type tag*/
-    } else {
+    } else if (class == CPAR) {
         parsize = WORDSIZE;
+    } else {
+        parsize = tp->size;
     }
     
     obj = first;
@@ -1048,7 +1085,7 @@ func_type(Type ptype, int *parblksize) {
     }
 
     ptype->nofpar = nofpar;
-    *parblksize = size;
+    *parblksize = (size + WORDSIZE - 1) /  WORDSIZE * WORDSIZE;
 }
 
 Type
@@ -1221,18 +1258,16 @@ module_declarations() {
             if (obj->expo) {
                 gpublic(obj->name);
                 g_name(obj->name);
-                if (x->type == IntType) {
+                if (x->type->form == FINTEGER) {
                     g_def_quad(obj->value);
-                } else if (x->type == RealType) {
-                    // obj->class = CCVAR;
+                } else if (x->type->form == FREAL) {
                     g_def_IEEE754_float(obj->value);
-                } else if (x->type == BoolType || x->type->form == FCHAR) {
+                } else if (x->type->form == FBOOLEAN || x->type->form == FCHAR) {
                     g_def_byte(obj->value);
                 }
             } else {
-                if (x->type == RealType) {
+                if (x->type->form == FREAL) {
                     g_name(obj->name);
-                    //obj->class = CCVAR;
                     g_def_IEEE754_float(obj->value);
                 }
             }
@@ -1277,11 +1312,11 @@ module_declarations() {
                     ++exno;
                 }
                 g_name(obj->name);
-                if (tp == IntType) {
+                if (tp->form == FINTEGER) {
                     g_def_quad(obj->value);
-                } else if (tp == RealType) {
+                } else if (tp->form == FREAL) {
                     g_def_IEEE754_float(obj->value);
-                } else if (tp == BoolType || tp->form == FCHAR) {
+                } else if (tp->form == FBOOLEAN || tp->form == FCHAR) {
                     g_def_byte(obj->value);
                 } else if(tp->form == FRECORD) {
                     int len = tp->size / WORDSIZE;
@@ -1316,6 +1351,7 @@ func_decl() {
     char procid[TEXTLEN + 1];
     int locblksize = 0, parblksize = 0;
     bool interrupt;
+    Item x;
 
     interrupt = FALSE;    
     get();
@@ -1390,6 +1426,20 @@ func_decl() {
         stat_sequence();
     }
 
+    if (Symbol == RETURN) {
+        get();
+        x = expression();
+        if (tp->base == NoType) {
+            mark("%s is not a function", proc->name);
+        } else if(!compare_types(tp->base, x->type, FALSE)) {
+            mark("%s wrong result type", x->name);
+        }
+    } else if (tp->base->form != FNOTYPE) {
+        mark("function without result", NULL);
+        tp->base = NoType;
+    }
+
+    Return(tp->base->form, x, interrupt);
 
     epilogue(locblksize);
     // gstack(locblksize);

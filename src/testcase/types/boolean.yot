@@ -1,4 +1,5 @@
 module boolean
+    import Text;
     const
         tru* = true;
         fls = false;
@@ -15,79 +16,61 @@ module boolean
 
 
         b := (i > j) & (i < j) & ((i > j) & (i < j));
-        WriteBool(b);
+        Text.WriteBool(b);
+        Text.WriteLn;
 
-             (*
+       
         b := ~(~(~(tru or tru & fls) or tru & fls) or ~fls);
-        WriteBool(b);
-        WriteLn;
-
-   
-            true
-
-            false
-            false
-            false
-            false
-
-            true
-            true
-            true
-            true
-            true
-            true
-
-            false
-            true
-            true
+        Text.WriteBool(b);
+        Text.WriteLn;
 
 
         b := true;
-        WriteBool(b);
-        WriteLn;
+        Text.WriteBool(b);
+        Text.WriteLn;
 
         b := false;
-        WriteBool(b);
-        WriteLn;
+        Text.WriteBool(b);
+        Text.WriteLn;
         b := (i > j) & (i < j) & ((i > j) & (i < j));
-        WriteBool(b);
-        WriteLn;
+        Text.WriteBool(b);
+        Text.WriteLn;
         b := fls & (tru or (tru & fls));
-        WriteBool(b);
-        WriteLn;
+        Text.WriteBool(b);
+        Text.WriteLn;
         b := ((tru & fls) or tru) & fls; 
-        WriteBool(b);
-        WriteLn;
+        Text.WriteBool(b);
+        Text.WriteLn;
 
         b := fls or (tru & fls or (tru & fls or tru));
-        WriteBool(b);
-        WriteLn;
+        Text.WriteBool(b);
+        Text.WriteLn;
         b := ((tru or tru & fls) or tru & fls) or fls;
-        WriteBool(b);
-        WriteLn;
+        Text.WriteBool(b);
+        Text.WriteLn;
         b := tru & true & tru & tru or tru & false;
-        WriteBool(b);
-        WriteLn;
+        Text.WriteBool(b);
+        Text.WriteLn;
         b := tru & false or tru & true & tru & tru;
-        WriteBool(b);
-        WriteLn;
+        Text.WriteBool(b);
+        Text.WriteLn;
         b := (tru or false) & true;
-        WriteBool(b);
-        WriteLn;
+        Text.WriteBool(b);
+        Text.WriteLn;
         b := true & (tru or false);
-        WriteBool(b);
-        WriteLn;
+        Text.WriteBool(b);
+        Text.WriteLn;
 
         b := (i > j) & (i < j) or ((i # j) & ((i > j) & (i <= j)));
-        WriteBool(b);
-        WriteLn;
+        Text.WriteBool(b);
+        Text.WriteLn;
         b := (i >= j) & (i # j);
-        WriteBool(b);
-        WriteLn;
+        Text.WriteBool(b);
+        Text.WriteLn;
         b := ((i <= j) or (i > j)) & (i # j);
-        WriteBool(b);
-        WriteLn;
-        *)
+        Text.WriteBool(b);
+        Text.WriteLn;
+        
         
     end;
 

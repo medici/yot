@@ -2,19 +2,27 @@ module records
 import Text;
 
 type 
-			person = record
-				age: integer;
-				name: array 34 of char;
-			end;
-		var s : person;
+	person = record
+		age: integer;
+		name: array 34 of char;
+	end;
+
+var s : person;
+
+func name(var p : person)
+	s.name := "new"
+end;
+
 func main()
 
 	s.age := 10;
 	Text.WriteInt(s.age);
 	Text.WriteLn;
+	
 	s.name := "str";
+	name(s);
 	Text.WriteString(s.name);
-	Text.WriteLn;
+	Text.WriteLn
 
 end;
 

@@ -56,6 +56,47 @@ gcstack(int n)	{
     ng("%s\t$%d, %s", "addq", n, "%rsp"); 
 }
 
+char*
+gc_absolute_adr(char *name) {
+    static char adr[512 + 8];
+
+    sprintf(adr, "%c%s(%%rip)", PREFIX, name);
+
+    return adr;
+}
+
+char*
+gc_relative_adr(int lab) {
+    static char adr[64];
+
+    sprintf(adr, "%d(%%rbp)", lab);
+
+    return adr;
+}
+
+void
+gc_load_mm(char *mm, int reg, int size, int form) {
+    char *op = "movq";
+    char *destination = regs[reg];
+
+    if (size == BYTE) {
+        op = "movb";
+        destination = regs_byte[reg];
+    }
+
+    if (form == FREAL) {
+        op = "movss";
+        destination = FPURegs[reg];
+    }
+
+    sg_binary_operation(op, mm, destination);
+}
+
+void
+gc_load_value() {
+    
+}
+
 void 
 gc_def_char(int c) {
     ng("%s\t'%c'", ".byte", c, NULL); 
@@ -768,8 +809,8 @@ gc_store_byte_literal(int v, int offset) {
 }
 
 void
-gc_store_regsb(int reg, int v) {
-
+gc_store_regb(int reg, int v) {
+    ng("movb\t%s, %d(%s)", regs_byte[reg], v, "%rbp");
 }
 
 void

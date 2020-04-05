@@ -92,7 +92,9 @@
               <li><a href="https://github.com/medici/yot">Github</a></li>
               </ul>
               <ul>
-              <li><a href="#数组">数组</a></li>
+              <li><a href="#数组">数组</a><ul>
+              <li><a href="#多维数组">多维数组</a></li>
+              </ul></li>
               </ul>
           </div>
 
@@ -115,6 +117,18 @@
 <a class="sourceLine" id="cb2-12" title="12">        <span class="dt">Text</span>.WriteLn</a>
 <a class="sourceLine" id="cb2-13" title="13">    <span class="kw">end</span>;</a>
 <a class="sourceLine" id="cb2-14" title="14"><span class="kw">end</span>.</a></code></pre></div>
+<h2 id="多维数组">多维数组</h2>
+<p>多维数组简洁明了的声明方式：</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode pascal"><code class="sourceCode pascal"><a class="sourceLine" id="cb3-1" title="1">    <span class="kw">array</span> N0, N1, ..., Nk <span class="kw">of</span> T</a></code></pre></div>
+<p>是以下方式的缩写：</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode pascal"><code class="sourceCode pascal"><a class="sourceLine" id="cb4-1" title="1">    <span class="kw">array</span> N0 <span class="kw">of</span></a>
+<a class="sourceLine" id="cb4-2" title="2">        <span class="kw">array</span> N1 <span class="kw">of</span></a>
+<a class="sourceLine" id="cb4-3" title="3">            ...</a>
+<a class="sourceLine" id="cb4-4" title="4">                <span class="kw">array</span> Nk <span class="kw">of</span> T</a></code></pre></div>
+<p>数组的索引也有两种试：</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode pascal"><code class="sourceCode pascal"><a class="sourceLine" id="cb5-1" title="1">    arr[N0][N1]...[Nk]</a></code></pre></div>
+<p>和</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode pascal"><code class="sourceCode pascal"><a class="sourceLine" id="cb6-1" title="1">    arr[N0, N1 ... Nk]</a></code></pre></div>
           </div>
         </div>
 

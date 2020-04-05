@@ -2,12 +2,12 @@ module arr
 	import Text;
 	func main()
 		|
-			var int : array 100 of integer;
+			var int : array 2, 10 of integer;
 				i : integer;
 		|
-		i := 10;
-		int[i] := 99;
-		Text.WriteInt(int[i]);
-		WriteLn
+		i := 0;
+		int[0, i] := 99;
+		Text.WriteInt(int[1, i]);
+		Text.WriteLn
 	end;
 end.

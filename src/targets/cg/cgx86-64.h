@@ -6,6 +6,13 @@
 #define DIVIDE_MASK 0xF
 #define DIVIDE_MASK2 0xF0
 
+enum {
+	BYTE = 1,
+	WORD = 2,
+	DOUBLEWORD = 4,
+	QUADWORD = 8
+};
+
 void gcdata();
 void gctext();
 void gcpublic(char *s);
@@ -13,6 +20,12 @@ void gcentry();
 void gcexit(void);
 void gcprelude(void);
 void gcpostlude(void);
+
+char* gc_absolute_adr(char *name);
+char* gc_relative_adr(int lab);
+void gc_load_mm(char *mm, int reg, int size, int form);
+
+
 void gc_def_char(int c);
 void gc_def_byte(int v);
 void gcstack(int n);
@@ -84,6 +97,7 @@ void gc_loadsb(int offset, int reg);
 void gc_loadb(int reg2, int reg1);
 void gc_store_integer_literal(int v, int offset);
 void gc_store_byte_literal(int v, int offset);
+void gc_store_regb(int reg, int v);
 void gc_load_globl(char *name, int rh);
 void gc_load_globlss(char *name, int rhf);
 void gc_load_globlsb(char *name, int rh);

@@ -82,7 +82,7 @@ int Line;
 int Column;
 int Ch; // current char
 char Text[TEXTLEN+1]; // current ident
-int Value;
+long int Value;
 double RValue;
 char *File;
 int Symbol;

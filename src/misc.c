@@ -113,6 +113,7 @@ init() {
     enter_keyword(FOR, "for");
     enter_keyword(NIL, "nil");
     enter_keyword(RECORD, "record");
+    enter_keyword(RETURN, "return");
     base_init();
     parser_init();
 }

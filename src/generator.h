@@ -21,6 +21,9 @@ struct Item {
     long double f;
 };
 
+void sg_unary_operation(char *op, char *opand);
+void sg_binary_operation(char *op, char *opand1, char *opand2);
+
 int label(void);
 
 void open();
@@ -83,6 +86,8 @@ void div_op(int op, Item x, Item y);
 void real_op(int op, Item x, Item y);
 void call(Item x, int r[2], char *name);
 void load(Item x);
+void value_param(Item x);
+void var_param(Item x, Type tp);
 void store(Item x, Item y);
 void open_array_param(Item x);
 void string_parameter(Item x);
@@ -103,6 +108,7 @@ void Floor(Item x);
 void Ord(Item x);
 void Shift(int fct, Item x, Item y);
 void Write(int r[2]);
+void Return(int form, Item x, bool interrupt);
 void call_write_int(int r[2]);
 void call_write_real(int r[2]);
 void call_write_bool(int r[2]);

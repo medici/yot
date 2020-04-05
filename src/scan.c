@@ -104,6 +104,7 @@ scan_number() {
     }
     Text[ns] = Ch;
     ++ns;
+
     if (Ch == 'h' || Ch == 'x') {
         do {
             h = d[i];
@@ -194,64 +195,13 @@ scan_number() {
         }
         Symbol = REAL;
         RValue = x;
-    } else if (Ch == 'e') {
-        do {
-            x = x * 10.0 + d[i];
-            ++i;
-        } while(i < n);
-
-        next();
-        if (Ch == '-') {
-            negE = TRUE;
-            next();
-        } else {
-            negE = FALSE;
-            if (Ch == '+') {
-                next();
-            }
-        }
-       
-        if (isdigit(Ch)) {
-            do {
-                Text[ns] = Ch;
-                ++ns;
-                s = s * 10 + (Ch - '0');
-                next();
-            } while(isdigit(Ch));
-
-            if (negE) {
-                e = e - s;
-            } else {
-                e = e + s;
-            }
-        } else {
-            Text[ns] = Ch;
-            ++ns;
-            Text[ns] = '\0';
-            mark("%s digit?", Text);
-        }
-        
-        if (e < 0) {
-            if (e >= -MAXEXP) {
-                x = x / ten(-e);
-            } else {
-                x = 0;
-            }
-        } else if (e > 0) {
-            if (e <= MAXEXP) {
-                x = ten(e) * x;
-            } else {
-                x = 0.0;
-                Text[ns] = '\0';
-                mark("%s too large", Text);
-            }
-        }
-        Symbol = REAL;
-        RValue = x;
     } else {
+        long int maxint = MAXINT;
         do {
             if (d[i] < 10) {
-                if (k <= (MAXINT - d[i]) / 10) {
+                if (Symbol == MINUS && k <= (maxint + 1 - d[i]) / 10) {
+                    k = k * 10 + d[i];
+                } else if (k <= (MAXINT - d[i]) / 10) {
                     k = k * 10 + d[i];
                 } else {
                     if (!marked) {
@@ -305,7 +255,7 @@ void
 scan_string(char *buf) {
     int i;
     
-    for (i=0; i<TEXTLEN - 1; i++) {
+    for (i=0; i < TEXTLEN - 1; i++) {
         next();
         if (Ch == '"') {
             buf[i] = '\0';

@@ -1,5 +1,5 @@
 module real
-    import types;
+    import types, Text;
 
     const
         wordsize2* = 666.6;
@@ -24,39 +24,41 @@ module real
                 j  : real3;
         |
 
-        ii := 10e5;
-        WriteReal(ii);
-        WriteLn();
+     
+        ii := 10.0e5;
+        Text.WriteReal(ii);
+        Text.WriteLn();
 
-        ii := 10e-5;
-        WriteReal(ii);
-        WriteLn();
+        ii := 10.0e-5;
+        Text.WriteReal(ii);
+        Text.WriteLn();
 
-        WriteReal(wordsize2);
-        WriteLn();
-        WriteReal(wordsize3);
-        WriteLn();
+        Text.WriteReal(wordsize2);
+        Text.WriteLn();
+        Text.WriteReal(wordsize3);
+        Text.WriteLn();
         ii := 2.0;
-        WriteReal(ii);
-        WriteLn();
+        Text.WriteReal(ii);
+        Text.WriteLn();
         i  := 20.0;
-        WriteReal(i);
-        WriteLn();
+        Text.WriteReal(i);
+        Text.WriteLn();
+
         j  := 10.0;
-        WriteReal(j);
-        WriteLn();
+        Text.WriteReal(j);
+        Text.WriteLn();
         i  := i * j;
-        WriteReal(i);
-        WriteLn();
+        Text.WriteReal(i);
+        Text.WriteLn();
         i  := i / j;
-        WriteReal(i);
-        WriteLn();
+        Text.WriteReal(i);
+        Text.WriteLn();
         i  := i div j;
-        WriteReal(i);
-        WriteLn();
+        Text.WriteReal(i);
+        Text.WriteLn();
         i  := 13.0 mod 12.0;
-        WriteReal(i);
-        WriteLn();
+        Text.WriteReal(i);
+        Text.WriteLn();
     end;
 
 end.

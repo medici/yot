@@ -137,7 +137,7 @@ type2(int ref, int form, int size) {
 
 void
 in_type(FILE *ptr, Object thismod, Type tp) {
-  int class, form, nofpar;
+  int class, form, nofpar, size;
   Object obj, parameter;
   fread(&form, sizeof(form), 1, ptr);
   tp->form = form;
@@ -167,6 +167,9 @@ in_type(FILE *ptr, Object thismod, Type tp) {
     tp->dsc = obj;
     tp->nofpar = nofpar;
     tp->size = WORDSIZE;
+  } else {
+    fread(&size, sizeof(size), 1, ptr);
+    tp->size = size;
   }
 }
 
@@ -208,44 +211,6 @@ import(char *impid) {
 
 
     fread(&class, sizeof(class), 1, ptr);
-    // if (type->form == FFUNC ) {
-
-    //   obj->type->base = NoType;
-    //   // Type base = checked_malloc(sizeof(*(base)));
-    //   // fread(base, sizeof(*base), 1, ptr);
-    //   // switch(base->form) {
-    //   //   case FINTEGER:
-    //   //     obj->type->base = IntType;
-    //   //     break;
-    //   //   case FREAL:
-    //   //     obj->type->base = RealType;
-    //   //     break;
-    //   //   case FNOTYPE:
-    //   //     obj->type->base = NoType;
-    //   //     break;
-    //   //   default:
-    //   //     mark("import unknown object type: %s", obj->name);
-    //   //     break;
-    //   // }
-
-    //   int nofpar = type->nofpar;
-    //   Object obj2 = NULL;
-    //   if (nofpar > 0) {
-    //     obj2 = checked_malloc(sizeof(*obj2));
-    //     obj->type->dsc = obj2;
-    //   }
-    //   Object obj3 = obj->type->dsc;
-    //   for (int i = 0; i<nofpar; i++) {
-    //     type = checked_malloc(sizeof(*(type)));
-    //     fread(type, sizeof(*type), 1, ptr);
-    //     in_type(obj2, type);
-    //     free(type);
-    //     obj3 = obj2;
-    //     obj3 = obj3->next;
-    //     obj2 = checked_malloc(sizeof(*obj2));
-    //   }
-    //   free(obj2);
-    // }
   }
 
   fclose(ptr);
@@ -276,6 +241,8 @@ out_type(FILE *ptr, Type tp) {
     out_type(ptr, tp->base);
     out_parameter(ptr, tp->dsc, tp->nofpar);
     fwrite(&placehodler, sizeof(placehodler), 1, ptr);
+  } else {
+    fwrite(&(tp->size), sizeof(tp->size), 1, ptr);
   }
 }
 
@@ -300,7 +267,9 @@ export(char *modid) {
       fwrite(&(obj->class), sizeof(obj->class), 1, ptr);
       fwrite(obj->name, sizeof(char), TEXTLEN + 1, ptr);
       out_type(ptr, obj->type);
-      if (obj->class == CCONST) {
+      if (obj->class == CTYPE) {
+
+      } else if (obj->class == CCONST) {
         if (obj->type->form == FREAL || obj->type->form == FINTEGER) {
           fwrite(&(obj->value), sizeof(obj->value), 1, ptr);
         }
@@ -334,7 +303,7 @@ void
 base_init() {
   BoolType = checked_malloc(sizeof(*BoolType));
   BoolType->form = FBOOLEAN;
-  BoolType->size = WORDSIZE;
+  BoolType->size = 1;
   
   IntType = checked_malloc(sizeof(*IntType));
   IntType->form = FINTEGER;

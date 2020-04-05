@@ -5,6 +5,8 @@
 整型
 -----
 
+整数的表示范围是： -2147483647 - 1  至  2147483647。
+
 ```pascal
 module number
 	import Text;

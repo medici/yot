@@ -1,0 +1,43 @@
+module function
+	import Text;
+
+	
+
+	func main()
+		|
+			var i : integer;
+					b : boolean;
+					c : char;
+					r : real;
+
+			func add(
+				var i : integer; 
+				c : boolean; 
+				d : char; 
+				s : real
+			) : real
+				i := i + 1;
+				c := true;
+				d := "d";
+				s := 14.4;
+
+				return s
+			end;
+		|
+
+		i := 3;
+		b := false;
+		c := "c";
+		r := 12.2;
+		r := add(i, b, c, r);
+		Text.WriteInt(i);
+		Text.WriteLn;
+		Text.WriteBool(b);
+		Text.WriteLn;
+		Write(c);
+		Text.WriteLn();
+		Text.WriteReal(r);
+		Text.WriteLn
+	end;
+
+end.

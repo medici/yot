@@ -1,4 +1,5 @@
 module ifstatement
+    import Text;
     const
         tru* = true;
         fls = false;
@@ -19,24 +20,24 @@ module ifstatement
         if r = rr then
             r := 2.8
         end;
-        WriteReal(r);
-        WriteLn();
+        Text.WriteReal(r);
+        Text.WriteLn();
         
         if r > rr then
             r := 2.8
         else
             r := 3.8
         end;
-        WriteReal(r);
-        WriteLn();
+        Text.WriteReal(r);
+        Text.WriteLn();
 
         if r < rr then
             r := 3.8
         elsif r = rr then
             r := 4.8
         end;
-        WriteReal(r);
-        WriteLn();
+        Text.WriteReal(r);
+        Text.WriteLn();
 
         if r < rr then
             r := 3.8
@@ -45,14 +46,14 @@ module ifstatement
         else
             r := 4.8
         end;
-        WriteReal(r);
-        WriteLn();
+        Text.WriteReal(r);
+        Text.WriteLn();
 
         if (r > rr) & (r < rr) or ((r # rr) or true & ((r > rr) & (r > rr))) then
             r := 5.8
         end;
-        WriteReal(r);
-        WriteLn;
+        Text.WriteReal(r);
+        Text.WriteLn;
 
         
     
@@ -65,21 +66,21 @@ module ifstatement
         elsif ((tru or tru & fls) or tru & fls) or fls then
             i := 2;
         end;
-        WriteInt(i);
-        WriteLn;
+        Text.WriteInt(i);
+        Text.WriteLn;
 
         if (i > j) & (i < j) or ((i # j) or true & ((i > j) & (i > j))) then
             i := 3
         end;
-        WriteInt(i);
-        WriteLn;
+        Text.WriteInt(i);
+        Text.WriteLn;
 
         
         if (i < j) then
             i := 4
         end;
-        WriteInt(i);
-        WriteLn
+        Text.WriteInt(i);
+        Text.WriteLn
     end;
 
 end.

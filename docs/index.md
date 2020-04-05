@@ -11,3 +11,4 @@
 * [Chapter 6: 数组](array.html)
 * [Chapter 7: 记录](record.html)
 * [Chapter 8: 语句](statement.html)
+* [Chapter 9: 函数](function.html)
