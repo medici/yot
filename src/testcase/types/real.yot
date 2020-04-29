@@ -19,16 +19,15 @@ module real
                 real3 = types.real2;
 
             var 
-                ii : real;
                 i  : real2;
                 j  : real3;
         |
 
-     
+        
         ii := 10.0e5;
         Text.WriteReal(ii);
         Text.WriteLn();
-
+        
         ii := 10.0e-5;
         Text.WriteReal(ii);
         Text.WriteLn();
@@ -56,9 +55,11 @@ module real
         i  := i div j;
         Text.WriteReal(i);
         Text.WriteLn();
-        i  := 13.0 mod 12.0;
+
+        i  := 13.0 mod 12.0 + 12.0 + 1.2;
         Text.WriteReal(i);
         Text.WriteLn();
+        
     end;
 
 end.

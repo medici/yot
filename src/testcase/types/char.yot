@@ -20,9 +20,9 @@ module char
 		Text.WriteInt(Ord(c2));
 		Write(LF);
 		bool := A # "A";
-		Text.WriteBool(~true);
+		Text.WriteBool(bool);
 		Write(LF);
-		(*
+		
 		c := 61x;
 		
 		ch := 63x;
@@ -39,7 +39,7 @@ module char
         end;
         Write(c);
         Write(LF);
-    *)
+    
 	end;
 
 end.

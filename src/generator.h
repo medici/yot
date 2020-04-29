@@ -3,6 +3,11 @@
 
 #include "data.h"
 
+#define REAL_LABEL  "__Real__"
+#define STR_LABEL   "__Str__"
+#define DATA_LABEL  ".data"
+#define TEXT_LABEL  ".text"
+#define GLOBL_LABEL ".globl"
 
 int PC;
 
@@ -21,8 +26,14 @@ struct Item {
     long double f;
 };
 
+void sg_operator(char *operator);
 void sg_unary_operation(char *op, char *opand);
 void sg_binary_operation(char *op, char *opand1, char *opand2);
+void ng_binary_operation(char *op, int source, char *destination);
+void ng_ternary_operation(char *op, int value, char *source, char *destination);
+
+void save_product_registers(int reg2, int reg1);
+void restore_product_registers(int reg2, int reg1);
 
 int label(void);
 
@@ -51,8 +62,11 @@ void sg(char *s, char *inst, char *s2);
 void sg2(char *s, char *inst, char *s2, char *s3);
 void gprelude();
 void gpostlude();
+int real_index(long int value);
+void store_str(char ch);
 void ng(char *s, char *inst, int n, char *reg);
 void ng2(char *s, char *inst, int v, int offset);
+void ng3(char *s, int v, char *inst, char *reg);
 void ngmove(int reg, int v);
 void g_def_string(char *s, int len);
 void g_def_byte(int v);
@@ -109,9 +123,6 @@ void Ord(Item x);
 void Shift(int fct, Item x, Item y);
 void Write(int r[2]);
 void Return(int form, Item x, bool interrupt);
-void call_write_int(int r[2]);
-void call_write_real(int r[2]);
-void call_write_bool(int r[2]);
-void call_write_ln();
+
 
 #endif

@@ -2,7 +2,7 @@ module standard
 	import Text;
 
 	const 
-		rrr = 1.4;
+		rrr = -1.4;
 
 	var 
 		r : real;
@@ -11,8 +11,10 @@ module standard
 		|
 			const rr = 12.4;
 			var 
-				i : integer;
+				i, j : integer;
+				r1 : real;
 		|
+		
 		(*
 		r := 923.9;
 		Text.WriteReal(r);
@@ -21,21 +23,32 @@ module standard
 		i := -1;
 		i := Abs(i);
 		Text.WriteInt(i);
-		Text.WriteLn
+		Text.WriteLn;
 
 		
 		i := Ord(r);
 		i := Asr(i, 23);
 		Text.WriteInt(i);
-		WriteLn;
+		Text.WriteLn;
 
-		i := Floor(2.6);
-		Text.WriteInt(i);
-		WriteLn;		*)
-
-		r := Abs(-12.4);
+	
+		r := -12.0;
+		r1 := 15.0;
+		r := Abs(rrr + 1.1);
 		Text.WriteReal(r);
-		Text.WriteLn
-		
-	end;
+		Text.WriteLn;
+	
+		r1 := 0.0 - 20.1;
+		r := -1.5;
+		i := Floor(rrr);
+		Text.WriteInt(i);
+		Text.WriteLn; 
+
+		*)
+
+		r := 923.9;
+		i := Ord(r);
+		Text.WriteInt(i);
+		Text.WriteLn;
+	end;    
 end.

@@ -498,7 +498,7 @@ expression() {
 
 bool
 compare_types(Type t0, Type t1, bool varpar) {
-    return t0 == t1 || (t0->form == FRECORD && t1->form == FRECORD && is_extension(t0, t1)) ;
+    return (t0->form == t1->form && t0->form != FARRAY) || (t0->form == FRECORD && t1->form == FRECORD && is_extension(t0, t1)) ;
 }
 
 void
@@ -536,7 +536,8 @@ parameter(Object par) {
         ) {
             string_parameter(x);
         } else {
-            value_param(x);
+            //value_param(x);
+            mark("incompatible parameters", NULL);
         }
     }
     
@@ -546,12 +547,12 @@ void
 param_list(Item x) {
     int n = 0;
     Object par;
-    if (x->type->dsc == NULL) {
-        par = checked_malloc(sizeof(*par));
-        x->type->dsc = par;
-    } else {
+    // if (x->type->dsc == NULL) {
+    //     par = checked_malloc(sizeof(*par));
+    //     x->type->dsc = par;
+    // } else {
         par = x->type->dsc;
-    }
+    //}
     
     if (Symbol != RPAREN) {
         parameter(par);
@@ -586,11 +587,11 @@ stand_proc(int pno) {
     pno = pno / 10;
     if (npar == 0) {
         if (pno == 0) {
-            if (Symbol == LPAREN) {
-                get();
-                check(RPAREN, "no )");
-            }
-            call_write_ln();
+            // if (Symbol == LPAREN) {
+            //     get();
+            //     check(RPAREN, "no )");
+            // }
+            // call_write_ln();
         }
     } else {
         check(LPAREN, "no (");
@@ -603,22 +604,23 @@ stand_proc(int pno) {
                 int* r = pre_call(x);
                 value_param(x);
                 Write(r);
-            } else if (pno == 1) {
-                int* r = pre_call(x);
-                check_integer(x);
-                value_param(x);
-                call_write_int(r);
-            } else if (pno == 2) {
-                int* r = pre_call(x);
-                check_real(x);
-                value_param(x);
-                call_write_real(r);
-            } else if(pno == 3) {
-                int* r = pre_call(x);
-                check_bool(x);
-                value_param(x);
-                call_write_bool(r);
-            }
+            } 
+            // else if (pno == 1) {
+            //     int* r = pre_call(x);
+            //     check_integer(x);
+            //     value_param(x);
+            //     call_write_int(r);
+            // } else if (pno == 2) {
+            //     int* r = pre_call(x);
+            //     check_real(x);
+            //     value_param(x);
+            //     call_write_real(r);
+            // } else if(pno == 3) {
+            //     int* r = pre_call(x);
+            //     check_bool(x);
+            //     value_param(x);
+            //     call_write_bool(r);
+            // }
         }
     }
     
@@ -674,6 +676,8 @@ stat_sequence() {
                         store(x, y);
                     } else if (x->type->form == FFUNC) {
                         printf("sss\n");
+                    } else {
+                        mark("Illegal expression", NULL);
                     }
                 } else if (Symbol == LPAREN) {
                     get();
@@ -1153,11 +1157,7 @@ declarations(int locblksize) {
                     str_to_char(x);
                     obj->value = x->a;
                 } else if (x->type == RealType) {
-                    int lab = label();
-                    glab(lab);
-                    // obj->class = CLAB;
-                    g_def_IEEE754_float(obj->value);
-                    obj->value = lab;
+                    obj->value = real_index(obj->value);
                 }
                 obj->type = x->type;
             } else {

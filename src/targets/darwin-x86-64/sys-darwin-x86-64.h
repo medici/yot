@@ -3,6 +3,7 @@
  *	Darwin/x86-64 environment
  */
 
+#define BITS    64
 #define OS		"Darwin"
 
 #define ASCMD       "/usr/bin/as -arch x86_64 -mmacosx-version-min=10.10 -g -o %s %s"

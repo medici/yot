@@ -4,15 +4,19 @@ import Text;
 func main()
 	|
 		const str = "abc9";
-		var s : array 256 of char;
+		var s, ss : array 256 of char;
 			  i : integer;
 	|
 
 	i := 0;
-	s := "strssssa";
+	s := "str";
 	Text.WriteString(s);
 	
-	WriteLn
+	Text.WriteLn;
+
+	Text.WriteString(str);
+	
+	Text.WriteLn
 end;
 
 end.

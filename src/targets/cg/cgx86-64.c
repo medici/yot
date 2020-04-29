@@ -27,16 +27,16 @@ char FPURegs[][7] = {
 
 void
 gcdata() {
-    g(".data"); 
+    sg_operator(DATA_LABEL);
 }
 
 void
 gctext() {
-    g(".text");
+    sg_operator(TEXT_LABEL);
 }
 
-void gcprelude(void)	{ }
-void gcpostlude(void)	{ }
+void gcprelude(void)    { }
+void gcpostlude(void)   { }
 
 int
 gc_stack_align(int size) {
@@ -51,14 +51,214 @@ gc_stack_align(int size) {
 }
 
 void
-gcstack(int n)	{
+gcstack(int n)  {
     n = gc_stack_align(n);
     ng("%s\t$%d, %s", "addq", n, "%rsp"); 
 }
 
+char* 
+gc_FPUReg(int reg) {
+    static char adr[512 + 8];
+
+    sprintf(adr, "%s", FPURegs[reg]);
+
+    return adr;
+}
+
+char* 
+gc_reg(int reg) {
+    static char adr[512 + 8];
+
+    sprintf(adr, "%s", regs[reg]);
+
+    return adr;
+}
+
+char*
+gc_reference(char *reg) {
+    static char adr[512 + 8];
+
+    sprintf(adr, "(%s)", reg);
+
+    return adr;
+}
+
 void 
-gc_def_char(int c) {
-    ng("%s\t'%c'", ".byte", c, NULL); 
+gc_dereference(char *reg, int form) {
+    char *op = MOV;
+
+    if (form == FREAL) {
+        op = MOVSS;
+    }
+
+    sg_binary_operation(op, gc_reference(reg), reg);
+}
+
+char*
+gc_absolute_adr(char *name) {
+    static char adr[512 + 8];
+
+    sprintf(adr, "%c%s(%%rip)", PREFIX, name);
+
+    return adr;
+}
+
+char*
+gc_relative_adr(int lab) {
+    static char adr[64];
+
+    sprintf(adr, "%d(%%rbp)", lab);
+
+    return adr;
+}
+
+void
+gc_load_mm(char *mm, int reg, int size, int form) {
+    char *op = MOV;
+    char *destination = regs[reg];
+
+    if (size == BYTE) {
+        op = MOVB;
+        destination = regs_byte[reg];
+    }
+
+    if (form == FREAL) {
+        op = MOVSS;
+        destination = FPURegs[reg];
+    }
+
+    sg_binary_operation(op, mm, destination);
+}
+
+void
+gc_load_value(int value, int reg, int form) {
+    char *op = MOV;
+    char *destination = regs[reg];
+
+    if (form == FREAL) {
+        op = MOVSS;
+        destination = FPURegs[reg];
+    }
+
+    ng_binary_operation(op, value, destination);
+}
+
+void
+gc_binary_reg2reg(char *op, int source, int destination, int size, int form) {
+    char *from = regs[source];
+    char *to = regs[destination];
+    if (size == BYTE) {
+        from = regs_byte[source];
+        to = regs_byte[destination];
+    }
+
+    if (form == FREAL) {
+        from = FPURegs[source];
+        to = FPURegs[destination];
+    }
+    sg_binary_operation(op, from, to);
+}
+
+void
+gc_binary_value2reg(char *op, int value, int destination, int size, int form) {
+    char *to = regs[destination];
+
+    if (size == BYTE) {
+        to = regs_byte[destination];
+    }
+
+    if (form == FREAL) {
+        to = FPURegs[destination];
+    }
+
+    ng_binary_operation(op, value, to);
+}
+
+void
+gc_load_real(int offset, int reg, int fpureg) {
+    char *source = gc_absolute_adr(REAL_LABEL);
+    sg_binary_operation(LEA, source, regs[reg]);
+    ng_ternary_operation(MOVSS, offset * 4, regs[reg], FPURegs[fpureg]);
+}
+
+void
+gc_load_str(int offset, int reg) {
+    char *source = gc_absolute_adr(STR_LABEL);
+    sg_binary_operation(LEA, source, regs[reg]);
+    ng_ternary_operation(LEA, offset, regs[reg], regs[reg]);
+}
+
+
+void
+gc_load_rmm(int reg1, int reg2, int size, int form) {
+    char source[64];
+    char *op = MOV;
+    char *destination = regs[reg2];
+
+    sprintf(source, "(%s)", regs[reg1]);
+
+    if (size == BYTE) {
+        op = MOVB;
+        destination = regs_byte[reg2];
+        if (reg1 != reg2) {
+            sg_binary_operation(XOR, regs[reg2], regs[reg2]);
+        }
+       
+    }
+
+    if (form == FREAL) {
+        op = MOVSS;
+        destination = FPURegs[reg2];
+    }
+
+    sg_binary_operation(op, source, destination);
+
+    if (size == BYTE && reg1 == reg2) {
+        sg_binary_operation(MOVZX, regs_byte[reg2], regs[reg2]);
+    }
+}
+
+void
+gc_store_value(int v, char *destination, int size, int form) {
+    char *op = MOV;
+
+    if (form == FREAL) {
+        op = MOVSS;
+    } else if (size == BYTE) {
+        op = MOVB;
+    }
+
+    ng_binary_operation(op, v, destination);
+}
+
+void
+gc_store_reg(int reg, char *destination, int size, int form) {
+    char *op = MOV, *source = regs[reg];
+
+    if (size == BYTE) {
+        op = MOVB;
+        source = regs_byte[reg];
+    } else if (form == FREAL) {
+        op = MOVSS;
+        source = FPURegs[reg];
+    }
+
+    sg_binary_operation(op, source, destination);
+}
+
+void
+gc_store_reg2rmm(int reg2, int reg1, int size, int form) {
+    char *op = MOV, *source = regs[reg2], *destination = gc_reference(regs[reg1]);
+
+    if (size == BYTE) {
+        op = MOVB;
+        source = regs_byte[reg2];
+    } else if (form == FREAL) {
+        op = MOVSS;
+        source = FPURegs[reg2];
+    }
+
+    sg_binary_operation(op, source, destination);
 }
 
 void
@@ -67,12 +267,12 @@ gc_def_byte(int v) {
 }
 
 void
-gc_long_int(long int v) {
+gc_def_long(long int v) {
     ng("%s\t%d", ".long", v, NULL); 
 }
 
 void
-gcldlab(int id)	{
+gcldlab(int id) {
     lg("%s\t%c%d(%%rip), %%rax", "leaq", id); 
 }
 
@@ -96,29 +296,8 @@ gc_popq_align(int num) {
 }
 
 void
-gc_byte_literal(int reg, int v) {
-    gc_xor2(reg, reg);
-    ng("%s\t$%d, %s", "movb", v, regs_byte[reg]);
-}
-
-void
-gc_integer_literal(int reg, int v) {
-    ng("%s\t$%d, %s", "movq", v, regs[reg]);
-}
-
-void
-gc_real_literal(int reg, int v) {
-    lg2("movss\t%c%d(%%rip), %s", v, FPURegs[reg]);
-}
-
-void
 gc_call(char *s) {
     sg("call\t%s", s, NULL);
-}
-
-void
-gc_call2(char *s) {
-    sg("call\t%s", g_symbol(s), NULL);
 }
 
 void
@@ -152,20 +331,6 @@ gc_popq(int reg) {
     
 }
 
-void
-gc_cvtsi2ss(int rh, int rhf) {
-    sg("cvtsi2ss\t%s, %s", regs[rh], FPURegs[rhf]);
-}
-
-void
-gc_cvtss2si(int rhf, int rh) {
-    sg("cvtss2si\t%s, %s", FPURegs[rhf], regs[rh]);
-}
-
-void
-lgc_cvtss2si(int lab, int rh) {
-    lg2("cvtss2si\t%c%d(%%rip), %s", lab, regs[rh]);
-}
 
 /*
 
@@ -176,79 +341,7 @@ FLD source
 对于单精度使用FSTS, 对于双精度使用FSTL
 
 */
-void
-gc_flds(int offset) {
-    ng("%s\t%d(%%rbp)", "flds", offset, NULL);
-}
 
-void
-gc_fldt(int offset) {
-    ng("%s\t%d(%%rbp)", "fldt", offset, NULL);
-}
-
-void
-gc_flds2(char *name) {
-    sg("%s\t%s(%%rip)", "flds", g_symbol(name));
-}
-
-void 
-gc_fldt2(char *name) {
-    sg("%s\t%s(%%rip)", "fldt", g_symbol(name));
-}
-
-void
-gc_flds3(int reg) {
-    sg("movss\t%s, (%%rsp)", FPURegs[reg], NULL); 
-    sg("%s\t(%%rsp)", "flds", NULL);
-}
-
-void 
-gc_fldt3(int reg) {
-    sg("movss\t%s, (%%rsp)", FPURegs[reg], NULL); 
-    sg("%s\t(%%rsp)", "fldt", NULL);
-}
-
-void
-gc_frndint() {
-    sg("frndint", NULL, NULL);
-}
-
-void
-gc_fsts(int offset) {
-    ng("%s\t%d(%%rbp)", "fsts", offset, NULL);
-}
-
-void
-gc_fstl(int offset) {
-    ng("%s\t%d(%%rbp)", "fstl", offset, NULL);
-}
-
-void
-gc_fsts2(char *name) {
-    sg("%s\t%s(%%rip)", "fsts", g_symbol(name));
-}
-
-void
-gc_fstl2(char *name) {
-    sg("%s\t%s(%%rip)", "fstl", g_symbol(name));
-}
-
-void
-gc_fsts3(int reg) {
-    sg("movss\t(%%rsp), %s", FPURegs[reg], NULL); 
-    sg("%s\t(%%rsp)", "fsts", NULL);
-}
-
-void
-gc_fstl3(int reg) {
-    sg("movss\t(%%rsp), %s", FPURegs[reg], NULL); 
-    sg("%s\t(%%rsp)", "fstl", NULL);
-}
-
-void
-gc_fabs() {
-    sg("fabs", NULL, NULL);
-}
 
 void
 gc_movzx(int reg) {
@@ -493,326 +586,95 @@ gc_jcmp(int cond, int lab) {
 }
 
 void
-gc_mov(int reg2, int reg1) {
-    sg("movq\t%s, %s", regs[reg2], regs[reg1]);
-}
-
-void 
-gc_shrl(int bit, int reg) {
-    ng("%s\t$%d, %s", "shrl", bit, regs_32[reg]);
-}
-
-void 
-gc_xor(int reg) {
-    sg("xorq\t$1, %s", regs[reg], NULL);
-}
-
-void 
-gc_xor2(int reg2, int reg1) {
-    sg("xorq\t%s, %s", regs[reg2], regs[reg1]);
-}
-
-void
 gc_xorb(int reg2, int reg1) {
     sg("xorb\t%s, %s", regs_byte[reg2], regs_byte[reg1]);
 }
 
 void
-gc_add(int reg2, int reg1) {
-    sg("addq\t%s, %s", regs[reg2], regs[reg1]);
+save_rCX(int reg2, int reg1) {
+    if (reg1 >= rCXI || reg2 >= rCXI) {
+        sg_unary_operation(PUSH, rCX);
+    }
 }
 
 void
-gc_add2(int v, int reg1) {
-    ng("%s\t$%d, %s", "addq", v, regs[reg1]);
+restore_rCX(int reg2, int reg1) {
+    if (reg1 >= rCXI || reg2 >= rCXI) {
+        sg_unary_operation(POP, rCX);
+    }
 }
 
 void
-gc_sub(int reg2, int reg1) {
-    sg("subq\t%s, %s", regs[reg2], regs[reg1]);
+save_product_registers(int reg2, int reg1) {
+    if (reg1 >= rAXI || reg2 >= rAXI) {
+        sg_unary_operation(PUSH, rAX);
+        sg_unary_operation(PUSH, rDX);
+    } else if (reg1 >= rDXI || reg2 >= rDXI) {
+        sg_unary_operation(PUSH, rDX);
+    }
+}
+
+void
+restore_product_registers(int reg2, int reg1) {
+    if (reg1 >= rAXI || reg2 >= rAXI) {
+        sg_unary_operation(POP, rDX);
+        sg_unary_operation(POP, rAX);
+    } else if (reg1 >= rDXI || reg2 >= rDXI) {
+        sg_unary_operation(POP, rDX);
+    }
 }
 
 void
 gc_mul(int reg2, int reg1) {
-    if (reg1 > 5 || reg2 > 5) {
-        g("pushq\t%rax");
-        g("pushq\t%rdx");
-    } else if (reg1 > 2 || reg2 > 2) {
-        g("pushq\t%rdx");
-    }
+    save_product_registers(reg2, reg1);
     
-    sg("movq\t%s, %s", regs[reg1], "%rax");
-    sg("imulq\t%s", regs[reg2], NULL);
-    sg("movq\t%s, %s", "%rax", regs[reg1]);
-    if (reg1 > 5 || reg2 > 5) {
-        g("popq\t%rdx");
-        g("popq\t%rax");
-    } else if (reg1 > 2 || reg2 > 2) {
-        g("popq\t%rdx");
-    }
+    sg_binary_operation(MOV, regs[reg1], rAX);
+    sg_unary_operation(IMUL, regs[reg2]);
+    sg_binary_operation(MOV, rAX, regs[reg1]);
+
+    restore_product_registers(reg2, reg1);
 }
 
-void
-gc_mul2(int v, int reg) {
-    ng("%s\t$%d, %s", "imulq", v, regs[reg]);
-}
 
+/*
+ * cltd;   
+ * AT&T汇编里的cltd指令相当于cdq指令，
+ * 作用是把eax的32位整数扩展为64位，
+ * 高32位用eax的符号位填充保存到edx
+ */
 void
 gc_div(int reg2, int reg1) {
-    if (reg1 > 5 || reg2 > 5) {
-        g("pushq\t%rax");
-        g("pushq\t%rdx");
-    } else if (reg1 > 2 || reg2 > 2) {
-        g("pushq\t%rdx");
-    }
-    
-    sg("movq\t%s, %s", regs[reg1], "%rax");
-    g("cqo"); //  cltd   ;   AT&T汇编里的cltd指令相当于cdq指令，作用是把eax的32位整数扩展为64位，高32位用eax的符号位填充保存到edx
-    sg("idivq\t%s", regs[reg2], NULL);
-    sg("movq\t%s, %s", "%rax", regs[reg1]);
-    if (reg1 > 5 || reg2 > 5) {
-        g("popq\t%rdx");
-        g("popq\t%rax");
-    } else if (reg1 > 2 || reg2 > 2) {
-        g("popq\t%rdx");
-    }
+    save_product_registers(reg2, reg1);
+
+    sg_binary_operation(MOV, regs[reg1], rAX);
+    sg_operator(CQO);
+    sg_unary_operation(IDIV, regs[reg2]);
+    sg_binary_operation(MOV, rAX, regs[reg1]);
+
+    restore_product_registers(reg2, reg1);
 }
 
 void 
 gc_mod(int reg2, int reg1) {
-    if (reg1 > 5 || reg2 > 5) {
-        g("pushq\t%rax");
-        g("pushq\t%rdx");
-    } else if (reg1 > 2 || reg2 > 2) {
-        g("pushq\t%rdx");
-    }
-    sg("movq\t%s, %s", regs[reg1], "%rax");
-    g("cqo");
-    sg("idivq\t%s", regs[reg2], NULL);
-    sg("movq\t%s, %s", "%rdx", regs[reg1]);
-    if (reg1 > 5 || reg2 > 5) {
-        g("popq\t%rdx");
-        g("popq\t%rax");
-    } else if (reg1 > 2 || reg2 > 2) {
-        g("popq\t%rdx");
-    }
-}
+    save_product_registers(reg2, reg1);
 
-void
-gc_leaq(int offset, int reg) {
-    ng("%s\t%d(%%rbp), %s", "leaq", offset, regs[reg]); 
-}
+    sg_binary_operation(MOV, regs[reg1], rAX);
+    sg_operator(CQO);
+    sg_unary_operation(IDIV, regs[reg2]);
+    sg_binary_operation(MOV, rDX, regs[reg1]);
 
-void
-gc_leaq2(int lab, int reg) {
-    lg2("leaq\t%c%d(%%rip), %s", lab, regs[reg]);
-}
-
-void
-gc_leaq3(char *name, int reg) {
-    sg("leaq\t%s(%%rip), %s", name, regs[reg]);
-}
-
-void
-gc_addss(int reg2, int reg1) {
-    int RHF = rhf();
-    if (RHF - 2 != reg1) {
-        sg2("vaddss\t%s, %s, %s", FPURegs[reg2], FPURegs[reg1], FPURegs[RHF - 2]);
-    } else {
-        sg("addss\t%s, %s", FPURegs[reg2], FPURegs[reg1]);
-    }
-}
-
-void
-gc_subss(int reg2, int reg1) {
-    int RHF = rhf();
-    if (RHF - 2 != reg1) {
-        sg2("vsubss\t%s, %s, %s", FPURegs[reg2], FPURegs[reg1], FPURegs[RHF - 2]);
-    } else {
-        sg("subss\t%s, %s", FPURegs[reg2], FPURegs[reg1]);
-    }
-}
-
-void
-gc_mulss(int reg2, int reg1) {
-    int RHF = rhf();
-    if (RHF -2  != reg1) {
-        sg2("vmulss\t%s, %s, %s", FPURegs[reg2], FPURegs[reg1], FPURegs[RHF - 2]);
-    } else {
-        sg("mulss\t%s, %s", FPURegs[reg2], FPURegs[reg1]);
-    }
-}
-
-void
-gc_divss(int reg2, int reg1) {
-    int RHF = rhf();
-    if (RHF - 2 != reg1) {
-        sg2("vdivss\t%s, %s, %s", FPURegs[reg2], FPURegs[reg1], FPURegs[RHF - 2]);
-    } else {
-        sg("divss\t%s, %s", FPURegs[reg2], FPURegs[reg1]);
-    }
-}
-
-void 
-gc_and(int reg2, int reg1) {
-    sg("andq\t%s, %s", regs[reg2], regs[reg1]);
-}
-
-void
-gc_xchgq(int reg1, int reg2) {
-    sg("xchgq\t%s, %s", regs[reg1], regs[reg2]);
-}
-
-void
-sar(int count, int reg) {
-    ng("%s\t$%d, %s", "sarq", count, regs[reg]);
-}
-
-void
-gc_shift(int op, int count, int reg) {
-    switch(op) {
-        case 1:
-            sar(count, reg);
-        default:
-            break;
-    }
-}
-void 
-gc_load(int offset, int reg) {
-    ng("%s\t%d(%%rbp), %s", "movq", offset, regs[reg]); 
-}
-
-void 
-gc_load_integer(int v, int reg) {
-    ng("%s\t$%d, %s", "movq", v, regs[reg]); 
-}
-
-void 
-gc_load_uinteger(unsigned int v, int reg) {
-    ng("%s\t$%u, %s", "movq", v, regs[reg]); 
-}
-
-void
-gc_load_imm(int reg2, int reg1) {
-    sg("movq\t(%s), %s", regs[reg2], regs[reg1]); 
-}
-
-void
-gc_load_imm2(int reg2, int reg1) {
-    sg("movss\t(%s), %s", regs[reg2], FPURegs[reg1]); 
-}
-
-void
-gc_load_offset(int reg1) {
-    sg("addq\t%%rbp, %s", regs[reg1], NULL);
-}
-
-void
-gc_load_offset2(int reg2, int reg1) {
-    sg("addq\t%s, %s", regs[reg2], regs[reg1]);
-}
-
-void 
-gc_loadss(int offset, int reg) {
-    ng("%s\t%d(%%rbp), %s", "movss", offset, FPURegs[reg]); 
-}
-
-void 
-gc_loadsb(int offset, int reg) {
-    ng("%s\t%d(%%rbp), %s", "movsb", offset, regs[reg]); 
-}
-
-void
-gc_loadb(int reg2, int reg1) {
-    sg("movb\t(%s), %s", regs[reg2], regs_byte[reg1]); 
-}
-
-void
-gc_load_globl(char *name, int rh) {
-    sg("movq\t%s(%%rip), %s", name, regs[rh]);
-}
-
-void 
-gc_load_globlss(char *name, int rhf) {
-    sg("movss\t%s(%%rip), %s", name, FPURegs[rhf]);
-}
-
-void 
-gc_load_globlsb(char *name, int rh) {
-    sg("movsb\t%s(%%rip), %s", name, regs[rh]);
-}
-
-void
-gc_store_reg(int reg, int v) {
-    ng("movq\t%s, %d(%s)", regs[reg], v, "%rbp"); 
-}
-
-void
-gc_store_regss(int reg, int v) {
-    ng("movss\t%s, %d(%s)", FPURegs[reg], v, "%rbp"); 
-}
-
-void
-gc_store_integer_literal(int v, int offset) {
-    ng2("%s\t$%d, %d(%%rbp)", "movq", v, offset); 
-}
-
-void 
-gc_store_byte_literal(int v, int offset) {
-    ng2("%s\t$%d, %d(%%rbp)", "movb", v, offset); 
-}
-
-void
-gc_store_regsb(int reg, int v) {
-
-}
-
-void
-gc_storeb(int reg2, int reg1) {
-    sg("movb\t%s, (%s)", regs_byte[reg2], regs[reg1]); 
-}
-
-
-void
-gc_store_reg2globl(int rh, char *name) {
-    sg("movq\t%s, %s(%%rip)", regs[rh], g_symbol(name));
-}
-
-void
-gc_store_reg2globlss(int rh, char *name) {
-    sg("movss\t%s, %s(%%rip)", FPURegs[rh], g_symbol(name));
-}
-
-void
-gc_store_reg2globlb(int reg, char *name) {
-    sg("movb\t%s, %s(%%rip)", regs_byte[reg], g_symbol(name));
-}
-
-void
-gc_store_reg2imm(int reg2, int reg1) {
-    // sg("addq\t%%rbp, %s", regs[reg1], NULL);
-    sg("movq\t%s, (%s)", regs[reg2], regs[reg1]); 
-}
-
-void 
-gc_store_regss2imm(int reg2, int reg1) {
-    sg("movss\t%s, (%s)", FPURegs[reg2], regs[reg1]);
-}
-
-void 
-gc_store_bool_literal(int v, char*name) {
-    ng("%s\t$%d, %s(%%rip)", "movb", v, g_symbol(name));
+    restore_product_registers(reg2, reg1);
 }
 
 void 
 gcpublic(char *s) { 
-    ng(".globl\t%s", s, 0, NULL); 
+    sg("%s\t%s",GLOBL_LABEL, s); 
 }
 
 void
 gcentry() {
     g("pushq\t%rbp");
-   	g("movq\t%rsp,%rbp");
+    g("movq\t%rsp,%rbp");
 }
 
 void

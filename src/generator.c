@@ -2,13 +2,21 @@
 #include "declare.h"
 #include "data.h"
 #include "define.h"
+#include "sys.h"
 #include "parser.h"
 #include "generator.h"
 #include "generate_code.h"
-#include "scan.h"
+
+#define MAX_REALX 2400 
+#define MAX_STRX 2400 
 
 int RH;  // normal, integer
 int RHF; // float
+
+int realx = 0;
+int strx = 0;
+long int Real[MAX_REALX];
+char Str[MAX_STRX];
 
 void
 incR() {
@@ -59,36 +67,52 @@ gparamters(int nofpar, Object params) {
     int j = 0;
     int f = 0;
     int offset = 0;
+    char *destination;
+
     for (; i < nofpar; ++i) {
         if (params->type->form == FINTEGER) {
             offset -= params->type->size;
-            gc_store_reg(j, offset);
+            destination = gc_relative_adr(offset);
+            gc_store_reg(j, destination, params->type->size, params->type->form);
             ++j;
         } else if (params->type->form == FREAL) {
             if (params->class == CVAR) {
                 offset -= params->type->size;
-                gc_store_regss(f, offset);
+                //gc_store_regss(f, offset);
+                destination = gc_relative_adr(offset);
+                gc_store_reg(f, destination, params->type->size, params->type->form);
                 ++f;
             } else {
                 offset -= params->type->size;
-                gc_store_reg(j, offset);
+                //gc_store_reg(j, offset);
+                destination = gc_relative_adr(offset);
+                gc_store_reg(j, destination, IntType->size, IntType->form);
                 ++j;
             }
             
         } else if (params->type->form == FARRAY || params->type->form == FRECORD) {
-            offset -= WORDSIZE * ( j + 2);
-            gc_store_reg(j, offset);
-            gc_store_reg(j + 1, offset + WORDSIZE);
+            
+            offset -= WORDSIZE * 2;
+            destination = gc_relative_adr(offset);
+            gc_store_reg(j, destination, params->type->size, params->type->form);
+            destination = gc_relative_adr(offset + WORDSIZE);
+            gc_store_reg(j + 1, destination, params->type->size, params->type->form);
+            //gc_store_reg(j, offset);
+            //gc_store_reg(j + 1, offset + WORDSIZE);
             ++j;
             ++j;
         } else if (params->type->form == FBOOLEAN || params->type->form == FCHAR) {
             if (params->class == CVAR) {
                 offset -= params->type->size;
                 //offset -= WORDSIZE;
-                gc_store_regb(j, offset);
+                //gc_store_regb(j, offset);
+                destination = gc_relative_adr(offset);
+                gc_store_reg(j, destination, params->type->size, params->type->form);
             } else {
                 offset -= WORDSIZE;
-                gc_store_reg(j, offset);
+                //gc_store_reg(j, offset);
+                destination = gc_relative_adr(offset);
+                gc_store_reg(j, destination, IntType->size, IntType->form);
             }
             ++j;
         }
@@ -115,6 +139,14 @@ ng2(char *s, char *inst, int v, int offset) {
     if (NULL == Outfile) return;
     fputc('\t', Outfile);
     fprintf(Outfile, s, inst, v, offset);
+    fputc('\n', Outfile);
+}
+
+void
+ng3(char *s, int v, char *inst, char *reg) {
+    if (NULL == Outfile) return;
+    fputc('\t', Outfile);
+    fprintf(Outfile, s, v, inst, reg);
     fputc('\n', Outfile);
 }
 
@@ -174,20 +206,6 @@ g_name(char *name) {
     graw(":");
 }
 
-void
-g_load_globl(char *name, int rh) {
-    gc_load_globl(g_symbol(name), rh);
-}
-
-void
-g_load_globlss(char *name, int rhf) {
-    gc_load_globlss(g_symbol(name), rhf);
-}
-
-void
-g_load_globlsb(char *name, int rh) {
-    gc_load_globlsb(g_symbol(name), rh);
-}
 
 void
 gpublic(char *procid) {
@@ -223,19 +241,56 @@ g_def_quad(int v) {
 
 void
 g_def_IEEE754_float(long int v) {
-    gc_long_int(v);
+    gc_def_long(v);
 }
 
-void 
-gcstorlw(int n) { 
-    ng("%s\t%%rax,%d(%%rbp)", "movq", n, NULL); 
-}
+// void 
+// gcstorlw(int n) { 
+//     ng("%s\t%%rax,%d(%%rbp)", "movq", n, NULL); 
+// }
 
 void
 galign(int k) {
 	gdata();
 	while (k++ % INTSIZE)
 		gc_def_byte(0);
+}
+
+void
+g_real() {
+    if (realx > 0) {
+        gdata();
+        graw(g_symbol(REAL_LABEL));
+        graw(":");
+        fputc('\n', Outfile);
+        int i = 0;
+        for(; i < realx; i++) {
+            gc_def_long(Real[i]);
+        }
+    }
+    
+}
+
+void
+g_str() {
+    if (strx > 0) {
+        gdata();
+        graw(g_symbol(STR_LABEL));
+        graw(":");
+        fputc('\n', Outfile);
+        int i = 0;
+        for(; i < strx; i++) {
+            gc_def_byte(Str[i]);
+        }
+
+        int mod = WORDSIZE - strx % WORDSIZE;
+
+        i = 0;
+
+        for(; i < mod; i++) {
+            gc_def_byte(0);
+        }
+    }
 }
 
 void
@@ -247,7 +302,24 @@ gprelude(void) {
 
 void
 gpostlude(void) {
+    g_real();
+    g_str();
 	gcpostlude();
+}
+
+
+int
+real_index(long int value) {
+    Real[realx] = value;
+    ++realx;
+
+    return realx - 1;
+}
+
+void
+store_str(char ch) {
+    Str[strx] = ch;
+    ++strx;
 }
 
 void 
@@ -272,18 +344,41 @@ sg2(char *s, char *inst, char *s2, char *s3) {
 }
 
 void
+sg_operator(char *operator) {
+    if (NULL == Outfile) return;
+    fprintf(Outfile, "\t%s\n", operator);
+}
+
+void
 sg_unary_operation(char *op, char *opand) {
-    sg("%s\t%s", op, opand);
+    if (NULL == Outfile) return;
+    fputc('\t', Outfile);
+    fprintf(Outfile, "%s\t%s", op,opand);
+    fputc('\n', Outfile);
 }
 
 void
 sg_binary_operation(char *op, char *opand1, char *opand2) {
-    sg2("%s\t%s, %s", op, opand1, opand2);
+    if (NULL == Outfile) return;
+    fputc('\t', Outfile);
+    fprintf(Outfile, "%s\t%s, %s", op, opand1, opand2);
+    fputc('\n', Outfile);
 }
 
 void
 ng_binary_operation(char *op, int source, char *destination) {
-    ng("%s\t$%d, %s", op, source, destination); 
+    if (NULL == Outfile) return;
+    fputc('\t', Outfile);
+    fprintf(Outfile, "%s\t$%d, %s", op, source, destination);
+    fputc('\n', Outfile);
+}
+
+void
+ng_ternary_operation(char *op, int value, char *source, char *destination) {
+    if (NULL == Outfile) return;
+    fputc('\t', Outfile);
+    fprintf(Outfile, "%s\t%d(%s), %s", op, value, source, destination);
+    fputc('\n', Outfile);
 }
 
 
@@ -297,7 +392,7 @@ label(void) {
 void
 g_cvtsi2ss(Item x) {
     x->type = RealType;
-    gc_cvtsi2ss(x->r, RHF);
+    sg_binary_operation(CVTSI2SS, gc_reg(x->r), gc_FPUReg(RHF));
     x->r = RHF;
     incFPUR();
     --RH;
@@ -306,7 +401,7 @@ g_cvtsi2ss(Item x) {
 void
 g_cvtss2si(Item x) {
     x->type = IntType;
-    gc_cvtss2si(x->r, RH);
+    sg_binary_operation(CVTSS2SI, gc_FPUReg(x->r), gc_reg(RH));
     x->r = RH;
     incR();
     --RHF;
@@ -314,33 +409,17 @@ g_cvtss2si(Item x) {
 
 void
 lg_cvtss2si(Item x) {
-    int lab = label();
-    gdata();
-    glab(lab);
-    g_def_IEEE754_float(x->a);
-    gtext();
     x->type = IntType;
-    lgc_cvtss2si(lab, RH);
+    x->a = real_index(x->a);
+
+    char *source = gc_absolute_adr(REAL_LABEL);
+    sg_binary_operation(LEA, source, gc_reg(RH));
+    ng_ternary_operation(CVTSS2SI, x->a * 4, gc_reg(RH), gc_reg(RH));
     x->mode = CREG;
     x->r = RH;
     incR();
 }
 
-void
-gc_store_lab(int lab, int offset) {
-    gcldlab(lab);
-    gcstorlw(offset);
-}
-
-void
-g_load(int offset, int RH) {
-    gc_load(offset, RH);
-}
-
-void
-g_loadss(int offset, int RH) {
-    gc_loadss(offset, RH);
-}
 
 void 
 g_setne(Item x) {
@@ -427,20 +506,27 @@ make_real_item(float value) {
 
 Item
 make_strlit_item(char *value) {
-    int lab = label(), k = 0;
-    gdata();
-    glab(lab);
-    g_def_string(Text, Value);
-    k += Value - 1;
-    gc_def_byte(0);
-    galign(k+1);
+    // int lab = label(), k = 0;
+    // gdata();
+    // glab(lab);
+    // g_def_string(Text, Value);
+    // k += Value - 1;
+    // gc_def_byte(0);
+    // galign(k+1);
     
     Item x = checked_malloc(sizeof(*x));
     x->mode = CCONST;
     x->type = StringType;
-    x->a = lab;
+    x->a = strx;
     x->b = Value;
     copy_ident(x->name, Text);
+
+    int i = 0;
+    for(; i <Value - 1; i++) {
+        store_str(Text[i]);
+    }
+
+    store_str(0);
     
     return x;
 }
@@ -451,31 +537,20 @@ load(Item x) {
     int form = x->type->form;
     if (x->mode != CREG) {
         if (x->mode == CCONST) {
-            if (form == FINTEGER || form == FCHAR) {
-                gc_integer_literal(RH, x->a);
-                x->r = RH;
-                incR();
-            } else if (x->type == RealType) {
+            if (form == FREAL) {
                 if (x->r > 0) { // local 
-                    gc_real_literal(RHF, x->a);
-                    x->r = RHF;
-                    incFPUR();
+                    gc_load_real(x->a, RH, RHF);
                 } else if(x->name[0] == '\0') { // literal
-                    int lab = label();
-                    gdata();
-                    glab(lab);
-                    g_def_IEEE754_float(x->a);
-                    gtext();
-                    gc_real_literal(RHF, lab);
-                    x->r = RHF;
-                    incFPUR();
+                    x->a = real_index(x->a);
+                    gc_load_real(x->a, RH, RHF);
                 } else {
-                    g_load_globlss(x->name, RHF);
-                    x->r = RHF;
-                    incFPUR();
+                    char *adr = gc_absolute_adr(x->name);
+                    gc_load_mm(adr, RHF, x->type->size, form); 
                 }
-            } else if (x->type->form == FBOOLEAN) {
-                gc_byte_literal(RH, x->a);
+                x->r = RHF;
+                incFPUR();
+            } else {
+                gc_load_value(x->a, RH, form);
                 x->r = RH;
                 incR();
             }
@@ -500,31 +575,18 @@ load(Item x) {
             gc_load_mm(adr, x->r, x->type->size, form);
         } else if (x->mode == CREGI) {
              if (x->type->form == FREAL) {
-                gc_load_imm2(x->r, RHF);
+                gc_load_rmm(x->r, RHF, x->type->size, x->type->form);
                 --RH;
                 incFPUR();
-             } else if (x->type->form == FCHAR) {
-                gc_load_immsb(x->r, x->r);
              } else {
-                gc_load_imm(x->r, x->r);
+                gc_load_rmm(x->r, x->r, x->type->size, x->type->form);
              }
         } else if (x->mode == CPAR) {
-            if (x->type->form == FINTEGER) {
-                g_load(x->a, RH);
-                x->r = RH;
-                gc_load_imm(x->r, x->r);
-                incR();
-            } else if(x->type->form == FBOOLEAN || x->type->form == FCHAR) {
-                g_load(x->a, RH);
-                x->r = RH;
-                gc_load_immsb(x->r, x->r);
-                incR();
-            } else if (x->type->form == FREAL) {
-                g_load(x->a, RH);
-                x->r = RH;
-                gc_load_imm(x->r, x->r);
-                incR();
-            }
+            char *source = gc_relative_adr(x->a);
+            gc_load_mm(source, RH, IntType->size, IntType->form);
+            x->r = RH;
+            gc_load_rmm(x->r, x->r, x->type->size, x->type->form);
+            incR();
             
         } else if (x->mode == CCOND) {
             x->r = RH;
@@ -540,14 +602,18 @@ load_adr(Item x) {
     if (x->mode == CVAR) {
         if (x->r > 0) {
             x->r = RH;
-            gc_leaq(x->a, x->r);
+            char *source = gc_relative_adr(x->a);
+            sg_binary_operation(LEA, source, gc_reg(x->r));
         } else {
             x->r = RH;
-            gc_leaq3(g_symbol(x->name), x->r);
+            char *source = gc_absolute_adr(x->name);
+            sg_binary_operation(LEA, source, gc_reg(x->r));
         }
         incR();
     } else if(x->mode == CPAR) {
-        gc_load(x->a, x->r);
+        char *adr = gc_relative_adr(x->a);
+        gc_load_mm(adr, x->r, x->type->size, x->type->form);
+        //gc_load(x->a, x->r);
         incR();
     }
     x->mode = CREG;
@@ -565,16 +631,15 @@ load_type_tag_adr(Type t) {
 
 void
 load_string_adr(Item x) {
-    gtext();
     x->r = RH;
-    gc_leaq2(x->a, x->r);
+    gc_load_str(x->a, x->r);
     incR();
 }
 
 void
 load_cond(Item x) {
     if (x->type->form == FBOOLEAN) {
-        load(x);
+        load(x);             
         gc_cmp2(x->r);
         x->c = NEQ - EQL;
         
@@ -594,12 +659,13 @@ value_param(Item x) {
 
 void
 var_param(Item x, Type tp) {
-    int xmd;
+    int xmd = x->mode;
     load_adr(x);
 
     if (tp->form == FRECORD) {
         if (xmd == CPAR) {
-            gc_load_integer(x->b, RH);
+            //gc_load_integer(x->b, RH);
+            gc_load_value(x->b, RH, FINTEGER);
             incR();
         } else {
             load_type_tag_adr(x->type);
@@ -645,13 +711,16 @@ restore_fpu_regs(int r) {
 
 void
 call(Item x, int r[2], char *name) {
-    gc_call2(name);
+    gc_call(g_symbol(name));
 
     Object dsc = x->type->dsc;
     int nofpar = x->type->nofpar;
     int j;
     for (j =0; j<nofpar; j++) {
-        if (dsc->type->form == FINTEGER || dsc->type->form == FBOOLEAN || dsc->type->form == FCHAR) {
+        if (dsc->type->form == FINTEGER || 
+            dsc->type->form == FBOOLEAN || 
+            dsc->type->form == FCHAR
+        ) {
             RH = RH - 1;
         } else if (dsc->type->form == FREAL) {
             if (dsc->class == CVAR) {
@@ -684,15 +753,47 @@ call(Item x, int r[2], char *name) {
 
 void
 neg(Item x) {
-    if (x->type->form == FINTEGER) {
+    int form = x->type->form;
+    int size = x->type->size;
+
+    if (form == FINTEGER) {
         if (x->mode == CCONST) {
             x->a = -x->a;
         } else {
             load(x);
-            gc_load_integer(0, RH);
-            gc_sub(x->r, RH);
-            gc_xchgq(RH, x->r);
+            gc_load_value(0, RH, x->type->form);
+            gc_binary_reg2reg(SUB, x->r, RH, size, form);
+            gc_binary_reg2reg(XCHG, x->r, RH, size, form);
         }
+    } else if (form == FREAL) {
+        char * destination;
+
+        if (x->mode == CCONST) {
+            x->a = x->a + 0x7FFFFFFF + 1;
+        } else if (x->r > 0) { 
+            destination = gc_relative_adr(x->a);
+            sg_unary_operation(FLDS, destination);
+            gcstack(-WORDSIZE);
+            destination = gc_reference(rSP);
+            ng_binary_operation(MOV, 0, destination);
+            sg_unary_operation(FLDS, destination);
+            sg_operator(FSUBP);
+            destination = gc_relative_adr(x->a);
+            sg_unary_operation(FSTS, destination);
+            gcstack(WORDSIZE);
+        } else {
+            destination = gc_absolute_adr(x->name);
+            sg_unary_operation(FLDS, destination);
+            gcstack(-WORDSIZE);
+            destination = gc_reference(rSP);
+            ng_binary_operation(MOV, 0, destination);
+            sg_unary_operation(FLDS, destination);
+            sg_operator(FSUBP);
+            destination = gc_absolute_adr(x->name);
+            sg_unary_operation(FSTS, destination);
+            gcstack(WORDSIZE);
+        }
+        
     }
 }
 
@@ -729,10 +830,6 @@ negated(int cond) {
 
 void
 setCC(Item x, int op) {
-    // x->mode = CCOND;
-    // x->a = 0;
-    // x->b = 0;
-    // x->c = op;
     gc_cmp2(x->r);
     x->c = NEQ - EQL;
     
@@ -821,42 +918,48 @@ void
 For2(Item x, Item y, Item w) {
     load(x);
     --RH;
-    gc_add2(w->a, x->r);
+    gc_binary_value2reg(ADD, w->a, x->r, x->type->size, x->type->form);
 }
 
 void
 real_op(int op, Item x, Item y) {
+    int form = x->type->form;
+    int size = x->type->size;
+    char *oper;
     load(x);
     load(y);
+
     if (op == RDIV) {
-        gc_divss(y->r, x->r);
-        --RHF;
+        oper = DIVSS;
     } else if(op == TIMES) {
-        gc_mulss(y->r, x->r);
-        --RHF;
+        oper = MULSS;
     } else if(op == PLUS) {
-        gc_addss(y->r, x->r);
-        --RHF;
+        oper = ADDSS;
     } else if(op == MINUS) {
-        gc_subss(y->r, x->r);
-        --RHF;
+        oper = SUBSS;
     }
+
+    gc_binary_reg2reg(oper, y->r, x->r, size, form);
+    --RHF;
     x->r = RHF - 1;
 }
 
 void
 add_op(int op, Item x, Item y) {
+    int form = x->type->form;
+    int size = x->type->size;
+    char *oper;
+
+    load(x);
+    load(y);
+
     if (op == PLUS) {
-        load(x);
-        load(y);
-        gc_add(y->r, x->r);
-        --RH;
+        oper = ADD;
     } else {
-        load(x);
-        load(y);
-        gc_sub(y->r, x->r);
-        --RH;
+        oper = SUB;
     }
+    gc_binary_reg2reg(oper, y->r, x->r, size, form);
+    --RH;
 }
 
 void
@@ -885,87 +988,78 @@ div_op(int op, Item x, Item y) {
 void
 store(Item x, Item y) {
     gtext();
+    char *destination;
+    int size, form;
+
     switch(x->mode) {
         case CVAR:
             if (x->r > 0) { //local
-                if (y->mode == CCONST && x->type->form == FINTEGER) {
-                    gc_store_integer_literal(y->a, x->a);
-                } else if (x->type->form == FBOOLEAN && y->mode == CCONST) {
-                    gc_store_byte_literal(y->a, x->a);
-                } else if (x->type->form == FCHAR && y->mode == CCONST) {
-                    gc_store_byte_literal(y->a, x->a);
+                size = x->type->size;
+                form = x->type->form;
+                if (y->mode == CCONST && x->type->form != FREAL) {
+                    destination = gc_relative_adr(x->a);
+                    gc_store_value(y->a, destination, size, form);
                 } else {
                     load(y);
                     if (y->mode == CREG) {
+                        char * destination;
+                        destination = gc_relative_adr(x->a);
+                        gc_store_reg(y->r, destination, size, form);
                         switch(x->type->form) {
                             case FBOOLEAN:
-                                gc_store_regb(y->r, x->a);
-                                --RH;
-                                break;
                             case FINTEGER:
-                                gc_store_reg(y->r, x->a);
-                                --RH;
-                                break;
-                            case FSTRING:
-                                gc_store_lab(y->a, x->a);
+                            case FCHAR:
                                 --RH;
                                 break;
                             case FREAL:
-                                gc_store_regss(y->r, x->a);
                                 --RHF;
                                 break;
-                            case FCHAR:
-                                gc_store_regb(y->r, x->a);
-                                --RH;
                         }
                     }
                 }
             } else {
-                if (x->type->form == FBOOLEAN && y->mode == CCONST) {
-                    gc_store_bool_literal(y->a, x->name);
-                } else {
-                    load(y);
-                    gtext();
-                    if (y->type == IntType) {
-                        gc_store_reg2globl(y->r, x->name);
-                        --RH;
-                    } else if (y->type == RealType) {
-                        gc_store_reg2globlss(y->r, x->name);
-                        --RHF;
-                    } else if (x->type->form == FBOOLEAN || x->type->form == FCHAR) {
-                        gc_store_reg2globlb(y->r, x->name);
-                        --RH;
-                    }
+                load(y);
+                gtext();
+                destination = gc_absolute_adr(x->name);
+                gc_store_reg(y->r, destination, x->type->size, x->type->form);
+                if (
+                    y->type == IntType || 
+                    x->type->form == FBOOLEAN || 
+                    x->type->form == FCHAR
+                ) {
+                    --RH;
+                } else if (y->type == RealType) {
+                    --RHF;
                 }
             }
             break;
         case CREGI:
             load(y);
+            gc_store_reg2rmm(y->r, x->r, x->type->size, x->type->form);
             if (x->type->form == FREAL) {
-                gc_store_regss2imm(y->r, x->r);
                 --RHF;
             } else {
-                gc_store_reg2imm(y->r, x->r);
                 --RH;
             }
             --RH;
             break;
         case CPAR:
             load(y);
-            if (x->type->form == FINTEGER) {
-                g_load(x->a, RH);
-                x->r = RH;
-                gc_store_reg2imm(y->r, x->r);
-                --RH;
-            } else if(x->type->form == FCHAR || x->type->form == FBOOLEAN) {
-                g_load(x->a, RH);
-                x->r = RH;
-                gc_storeb(y->r, x->r);
+            destination = gc_relative_adr(x->a);
+            size = IntType->size;
+            form = IntType->form;
+
+            gc_load_mm(destination, RH, size, form);
+            x->r = RH;
+            gc_store_reg2rmm(y->r, x->r, x->type->size, x->type->form);
+
+            if (
+                x->type->form == FINTEGER || 
+                x->type->form == FCHAR || 
+                x->type->form == FBOOLEAN
+            ) {
                 --RH;
             } else if(x->type->form == FREAL) {
-                g_load(x->a, RH);
-                x->r = RH;
-                gc_store_regss2imm(y->r, x->r);
                 --RHF;
             }
         
@@ -988,24 +1082,26 @@ arr_index(Item x, Item y) {
         if (x->mode == CVAR) {
             x->a = x->a + y->a * size;
         } else if (x->mode == CREGI) {
-            gc_add2(y->a * size, x->r);
+            gc_binary_value2reg(ADD, y->a * size, x->r, y->type->size, y->type->form);
         }
     } else {
         load(y);
-        gc_mul2(size, y->r);
+        gc_binary_value2reg(IMUL, size, y->r, IntType->size, IntType->form);
         if (x->mode == CVAR) {
-            gc_add2(x->a, y->r);
-            gc_load_offset(y->r);
+            gc_binary_value2reg(ADD, x->a, y->r, x->type->size, x->type->form);
+            sg_binary_operation(ADD, rBP, gc_reg(y->r));
+       
             x->r = y->r;
             x->mode = CREGI;
         } else if (x->mode == CPAR) {
-            g_load(x->a, RH);
+            char *source = gc_relative_adr(x->a);
+            gc_load_mm(source, RH, IntType->size, IntType->form);
             x->r = RH;
-            gc_load_offset2(x->r, y->r);
+            gc_binary_reg2reg(ADD, x->r, y->r, IntType->size, IntType->form);
             x->r = y->r;
             x->mode = CREGI;
         } else if (x->mode == CREGI) {
-            gc_add(y->r, x->r);
+            gc_binary_reg2reg(ADD, y->r, x->r, x->type->size, x->type->form);
             --RH;
         }
     }
@@ -1018,13 +1114,12 @@ field(Item x, Object y) {
             x->a = x->a + y->value;
         } else {
             load_adr(x);
-            gc_add2(y->value, x->r);
+            gc_binary_value2reg(ADD, y->value, x->r, x->type->size, x->type->form);
             x->mode = CREGI;
         }
     } else if (x->mode == CPAR) {
         load_adr(x);
-        gc_add2(y->value, x->r);
-        printf("%d\n", x->b);
+        gc_binary_value2reg(ADD, y->value, x->r, x->type->size, x->type->form);
     }
 }
 
@@ -1041,13 +1136,12 @@ copy_string(Item x, Item y) {
     }
 
     load_string_adr(y);
-    gc_xor2(RH, RH);
     int lab = label();
     Fixup(lab);
-    gc_loadb(y->r, RH);
-    gc_storeb(RH, x->r);
-    gc_add2(1, y->r);
-    gc_add2(1, x->r);
+    gc_load_rmm(y->r, RH, x->type->base->size, FCHAR);
+    gc_store_reg2rmm(RH, x->r, x->type->base->size, x->type->base->form);
+    gc_binary_value2reg(ADD, 1, y->r, y->type->size, y->type->form);
+    gc_binary_value2reg(ADD, 1, x->r, x->type->size, x->type->form);
     gc_cmp2(RH);
     gc_jcmp(NEQ - EQL, lab);
     RH = RH - 2;
@@ -1063,17 +1157,19 @@ void
 open_array_param(Item x) {
     load_adr(x);
     if (x->type->len >= 0) {
-        gc_load_integer(x->type->len, RH);
+        gc_load_value(x->type->len, RH, FINTEGER);
         incR();
     } else {
-
+        char *source = gc_relative_adr(x->a + WORDSIZE);
+        gc_load_mm(source, RH, IntType->size, IntType->form);
+        incR();
     }
 }
 
 void
 string_parameter(Item x) {
     load_string_adr(x);
-    gc_load_integer(x->b, RH);
+    gc_load_value(x->b, RH, FINTEGER);
     incR();
 }
 
@@ -1110,7 +1206,7 @@ not(Item x) {
     if (x->mode != CCOND) {
         load_cond(x);
     }
-    gc_xor(x->r);
+    ng_binary_operation(XOR, 1, gc_reg(x->r));
     gc_cmp2(x->r);
 }
 
@@ -1167,107 +1263,100 @@ Abs(Item x) {
         x->a = -x->a;
     } else {
         if (x->type->form == FREAL) {
+            char *destination;
+            char *source;
+
             if (x->mode == CVAR) {
                 if (x->r > 0) { 
-                    gc_flds(x->a);
-                    gc_fabs();
-                    gc_fsts(x->a);
-                    x->type = IntType;
+                    destination = gc_relative_adr(x->a);
                 } else {
-                    gc_flds2(x->name);
-                    gc_fabs();
-                    gc_fsts2(x->name);
+                    destination = gc_absolute_adr(x->name);
                 }
-            } else if (x->mode == CCONST) {
-                gcstack(-8);
+                sg_unary_operation(FLDS, destination);
+                sg_operator(FABS);
+                sg_unary_operation(FSTS, destination);
+            } else if (x->mode == CCONST || x->mode == CREG) {
                 load(x);
-                gc_flds3(x->r);
-                gc_fabs();
-                gc_fsts3(x->r);
-                gcstack(8);
-            } else if (x->mode == CREG) {
-                gcstack(-8);
-                gc_flds3(x->r);
-                gc_fabs();
-                gc_fsts3(x->r);
-                gcstack(8);
+                source = gc_FPUReg(x->r);
+                destination = gc_reference(rSP);
+                gcstack(-WORDSIZE);
+                sg_binary_operation(MOVSS, source, destination);
+                sg_unary_operation(FLDS, destination);
+                sg_operator(FABS);
+                sg_binary_operation(MOVSS, destination, source);
+                sg_unary_operation(FSTS, destination);
+                gcstack(WORDSIZE);
             }
             x->type = RealType;
         } else {
             load(x);
             int reg = x->r;
-            if (reg > 5) {
-                g("pushq\t%rax");
-                g("pushq\t%rdx");
-            } else if (reg > 2) {
-                g("pushq\t%rdx");
-            }
-            gc_mov(reg, 6);
-            g("cqo");
-            gc_xor2(3, 6);
-            gc_sub(3, 6);
-            gc_mov(6, reg);
-            if (reg > 5) {
-                g("popq\t%rdx");
-                g("popq\t%rax");
-            } else if (reg > 2) {
-                g("popq\t%rdx");
-            }
+            int size = IntType->size;
+            int form = IntType->form;
+
+            save_product_registers(reg, reg);
+            gc_binary_reg2reg(MOV, reg, rAXI, size, form);
+
+            sg_operator(CQO);
+
+            gc_binary_reg2reg(XOR, rDXI, rAXI, size, form);
+            gc_binary_reg2reg(SUB, rDXI, rAXI, size, form);
+            gc_binary_reg2reg(MOV, rAXI, reg, size, form);
+
+            restore_product_registers(reg, reg);
         }
     }
 }
 
 void
 Floor(Item x) {
+    char *destination, *source;
     if (x->mode == CVAR) {
-        if (x->r > 0) { 
-            gc_flds(x->a);
-            gc_frndint();
-            gc_fsts(x->a);
-            load(x);
-            gc_cvtss2si(x->r, RH);
-            --RHF;
-            x->r = RH;
-            incR();
-            x->type = IntType;
+        
+        if (x->r > 0) {
+            destination = gc_relative_adr(x->a);
         } else {
-            gc_flds2(x->name);
-            gc_frndint();
-            gc_fsts2(x->name);
-            load(x);
-            gc_cvtss2si(x->r, RH);
-            --RHF;
-            x->r = RH;
-            incR();
-            x->type = IntType;
+            destination = gc_absolute_adr(x->name);
         }
-    } else if (x->mode == CCONST) {
-        gcstack(-8);
+        sg_unary_operation(FLDS, destination);
+        sg_operator(FRNDINT);
+        sg_unary_operation(FSTS, destination);
         load(x);
-        gc_flds3(x->r);
-        gc_frndint();
-        gc_fsts3(x->r);
-        gc_cvtss2si(x->r, RH);
-        x->r = RH;
-        incR();
-        gcstack(8);
-        x->type = IntType;
+        sg_binary_operation(CVTSS2SI, gc_FPUReg(x->r), gc_reg(RH));
+
         --RHF;
-    } else if (x->mode == CREG) {
-        gcstack(-8);
-        gc_flds3(x->r);
-        gc_frndint();
-        gc_fsts3(x->r);
-        gc_cvtss2si(x->r, RH);
         x->r = RH;
         incR();
-        gcstack(8);
+         x->type = IntType;
+    } else if (x->mode == CCONST || x->mode == CREG) {
+        load(x);
+        source = gc_FPUReg(x->r);
+        destination = gc_reference(rSP);
+        gcstack(-WORDSIZE);
+        sg_binary_operation(MOVSS, source, destination);
+        sg_unary_operation(FLDS, destination);
+        sg_operator(FRNDINT);
+        sg_binary_operation(MOVSS, destination, source);
+        sg_unary_operation(FSTS, destination);
+        sg_binary_operation(CVTSS2SI, gc_FPUReg(x->r), gc_reg(RH));
+        x->r = RH;
+        incR();
+        gcstack(WORDSIZE);
+        x->type = IntType;
         --RHF;
     }
 }
 
 void 
 Ord(Item x) {
+    // int tf = x->type->form;
+
+    // if (tf != FCHAR && tf != FBOOLEAN && tf != FSET) {
+    //     mark("Ord's parameter's type must be char, boolean or set", NULL);
+    // }
+
+    // load(x);
+
     int tf = x->type->form;
     if (tf == FREAL) {
         x->type = IntType;
@@ -1275,23 +1364,32 @@ Ord(Item x) {
     load(x);
 
     if (tf == FREAL) {
-        int unsigned v= 0xFFFFFFFF;
-        gc_load_uinteger(v, RH);
-        gc_and(RH, x->r);
+        int v= 0x7FFFFFFF;
+        // gc_load_uinteger(v, RH);
+        gc_load_value(v, RH, IntType->form);
+        // gc_and(RH, x->r);
+        gc_binary_reg2reg(ANDx, RH, x->r, IntType->size, IntType->form);
     }
 }
 
 void
 Shift(int fct, Item x, Item y) {
-    int op;
+    char *op;
     load(x);
 
-    op = fct;
+    if (fct == 1) {
+        op = SAR;
+    }
 
     if (y->mode == CCONST) {
-        gc_shift(op, y->a % 32, x->r);
+        ng_binary_operation(op, y->a % BITS, gc_reg(x->r));
     } else {
-        load(x);
+        load(y);
+        save_rCX(y->r, x->r);
+        gc_binary_reg2reg(MOV, y->r, rCXI, x->type->size, x->type->form);
+        sg_binary_operation(op, CL, gc_reg(x->r));
+        restore_rCX(y->r, x->r);
+        --RH;
     }
 }
 
@@ -1315,40 +1413,3 @@ Return(int form, Item x, bool interrupt) {
     RHF = 0;
 }
 
-void
-call_write_int(int r[2]) {
-    gc_align(r[0] + r[1]);
-    gc_call("WriteInt");
-    gc_popq_align(r[0] + r[1]);
-    restore_fpu_regs(r[1]);
-    restore_regs(r[0]);
-    RHF = 0;
-    RH = 0;
-}
-
-void
-call_write_real(int r[2]) {
-    gc_align(r[0] + r[1] * 2);
-    gc_call("WriteReal");
-    gc_popq_align(r[0] + r[1] * 2);
-    restore_fpu_regs(r[1]);
-    restore_regs(r[0]);
-    RHF = 0;
-    RH = 0;
-}
-
-void
-call_write_bool(int r[2]) {
-    gc_align(r[0] + r[1]);
-    gc_call("WriteBool");
-    gc_popq_align(r[0] + r[1]);
-    restore_fpu_regs(r[1]);
-    restore_regs(r[0]);
-    RHF = 0;
-    RH = 0;
-}
-
-void
-call_write_ln() {
-    gc_call("WriteLn");
-}

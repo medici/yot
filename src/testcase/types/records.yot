@@ -5,11 +5,14 @@ type
 	person = record
 		age: integer;
 		name: array 34 of char;
+		hh: real;
 	end;
 
 var s : person;
 
-func name(var p : person)
+func name(p : person)
+	Text.WriteString(s.name);
+	Text.WriteLn;
 	s.name := "new"
 end;
 
@@ -18,7 +21,9 @@ func main()
 	s.age := 10;
 	Text.WriteInt(s.age);
 	Text.WriteLn;
-	
+	s.hh := 1.1;
+	Text.WriteReal(s.hh);
+	Text.WriteLn;
 	s.name := "str";
 	name(s);
 	Text.WriteString(s.name);

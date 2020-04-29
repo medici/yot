@@ -9,27 +9,35 @@ module function
 					b : boolean;
 					c : char;
 					r : real;
+					str : array 12 of char;
 
 			func add(
 				var i : integer; 
-				c : boolean; 
-				d : char; 
-				s : real
+				var c : boolean; 
+				var d : char; 
+				var s : real;
+				var str : array of char 
 			) : real
 				i := i + 1;
 				c := true;
 				d := "d";
 				s := 14.4;
+				str[0] := "n";
+				Text.WriteString(str);
+				Text.WriteLn;
 
 				return s
 			end;
 		|
 
+		str := "str";
+		
 		i := 3;
+		str[i] := "a";
 		b := false;
 		c := "c";
 		r := 12.2;
-		r := add(i, b, c, r);
+		r := add(i, b, c, r, str);
 		Text.WriteInt(i);
 		Text.WriteLn;
 		Text.WriteBool(b);
@@ -37,7 +45,8 @@ module function
 		Write(c);
 		Text.WriteLn();
 		Text.WriteReal(r);
-		Text.WriteLn
+		Text.WriteLn;
+		
 	end;
 
 end.

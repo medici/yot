@@ -3,6 +3,7 @@
  *	Linux/x86-64 environment
  */
 
+#define BITS    64
 #define OS		"Linux"
 
 #define ASCMD       "/usr/bin/as  -o %s %s"

@@ -39,29 +39,6 @@ module Text
 		Write(LF);
 	end;
 
-	(*
-	func Ten(n : integer) : real
-		|
-			var t, p : real;
-		|
-		t := 1.0;
-		p := 10.0;
-
-		if n # 0 then
-			repeat
-				if n mod 2 = 1 then
-					t := p * t;
-				end;
-				p := p * p;
-				n := n div 2
-			until n <= 0;
-		end;
-
-		return t
-	end;
-	*)
-
-
 	func WriteString*(s: array of char)
 		|
 			var i: integer;
@@ -79,6 +56,24 @@ module Text
 		else
 			WriteString("true")
 		end
+	end;
+
+	func Ten(n : integer) : real
+		|
+			var t, p : real;
+		|
+		t := 1.0;
+		p := 10.0;
+
+		while n > 0 do
+			if n mod 2 = 1 then
+				t := p * t;
+			end;
+			p := p * p;
+			n := n div 2
+		end;
+
+		return t
 	end;
 
 	func WriteReal*(x: real)
@@ -102,32 +97,13 @@ module Text
       end;
       e := (e - 127) * 77 div 256 - 6;  (*decimal exponent*)
 
-
-
-		    (* Ten func *)
-		    t := 1.0;
-			p := 10.0; (*compute 10^n *)
-			if e < 0 then
-				n2 := -e
-			else
-				n2 := e
-			end;
-			if n2 # 0 then
-				repeat
-					if n mod 2 = 1 then
-						t := p * t;
-					end;
-					p := p * p;
-					n2 := n2 div 2
-				until n2 <= 0;
-			end;
-
-
-      if e >= 0 then 
-      	x := x / t
-      else 
-      	x := t * x 
+      if e >= 0 then
+      	x := x / Ten(e)
+      else
+      	x := Ten(-e) * x
       end;
+
+	
       m := Floor(x + 0.5);
 
       if m >= 10000000 then
@@ -152,11 +128,9 @@ module Text
       else
       	n := 14 - n 
       end;
-      if i > n then
-      	repeat
-      		i := i - 1;
-      		Write(d[i])
-      	until i <= n;
+      while i > n do
+    		i := i - 1;
+    		Write(d[i])
       end;
       Write(65x); 
       e := e + 6;

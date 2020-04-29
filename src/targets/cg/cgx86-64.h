@@ -6,6 +6,58 @@
 #define DIVIDE_MASK 0xF
 #define DIVIDE_MASK2 0xF0
 
+#define MOV     "movq"
+#define MOVB    "movb"
+#define MOVSS   "movss"
+#define MOVSB   "movsb"
+#define MOVZX   "movzx"
+
+#define PUSH    "pushq"
+#define POP     "popq"
+#define LEA     "leaq"
+
+#define ADD     "addq"
+#define ADDSS   "addss"
+#define SUB     "subq"
+#define SUBSS   "subss"
+#define IMUL    "imul"
+#define MULSS   "mulss"
+#define IDIV    "idivq"
+#define DIVSS   "divss"
+
+#define XOR     "xorq"
+#define ANDx    "andq"
+#define SAR     "sarq"
+
+
+#define XCHG    "xchgq"
+#define CQO     "cqo"
+#define REP     "rep" 
+
+#define FABS    "fabs"
+#define FLDS    "flds"
+#define FSTS    "fsts"
+#define FRNDINT "frndint"
+#define FSUBP   "fsubp"
+
+
+#define CVTSS2SI "cvtss2si"
+#define CVTSI2SS "cvtsi2ss"
+
+#define rDI     "%rdi"
+#define rSI     "%rsi"
+#define rAX     "%rax"
+#define rDX     "%rdx"
+#define rCX     "%rcx"
+#define CL      "%cl"
+#define rDII    0
+#define rSII    1
+#define rAXI    6
+#define rDXI    3
+#define rCXI    2
+#define rSP     "%rsp"
+#define rBP     "%rbp"
+
 enum {
 	BYTE = 1,
 	WORD = 2,
@@ -21,37 +73,39 @@ void gcexit(void);
 void gcprelude(void);
 void gcpostlude(void);
 
+char* gc_FPUReg(int reg);
+char* gc_reg(int reg);
+char* gc_reference(char *reg);
+void gc_dereference(char *reg, int form);
+
 char* gc_absolute_adr(char *name);
 char* gc_relative_adr(int lab);
 void gc_load_mm(char *mm, int reg, int size, int form);
+void gc_load_value(int value, int reg, int form);
+void gc_load_real(int offset, int reg, int fpureg);
+void gc_load_str(int offset, int reg);
+void gc_load_rmm(int reg1, int reg2, int size, int form);
+void gc_binary_reg2reg(char *op, int source, int destination, int size, int form);
+void gc_binary_value2reg(char *op, int value, int destination, int size, int form);
 
+void gc_store_value(int v, char *destination, int size, int form);
+void gc_store_reg(int reg, char *destination, int size, int form);
+void gc_store_reg2rmm(int reg2, int reg1, int size, int form);
 
-void gc_def_char(int c);
+void save_rCX(int reg2, int reg1);
+void restore_rCX(int reg2, int reg1);
+
 void gc_def_byte(int v);
+void gc_def_long(long int v);
+void gc_def_quad(int v);
+
 void gcstack(int n);
 void gcldlab(int id);
-void gc_def_quad(int v);
 void gc_align(int num);
 void gc_popq_align(int num);
 void gc_pushq(int reg);
 void gc_popq(int reg);
-void gc_cvtsi2ss(int rh, int rhf);
-void gc_cvtss2si(int rhf, int rh);
-void lgc_cvtss2si(int lab, int rh);
-void gc_flds(int offset);
-void gc_fldt(int offset);
-void gc_flds2(char *name);
-void gc_fldt2(char *name);
-void gc_flds3(int lab);
-void gc_fldt3(int lab);
-void gc_frndint();
-void gc_fsts(int offset);
-void gc_fstls(int offset);
-void gc_fsts2(char *name);
-void gc_fstl2(char *name);
-void gc_fsts3(int reg);
-void gc_fstl3();
-void gc_fabs();
+
 void gc_movzx(int reg);
 void gc_setne(int reg);
 void gc_setop(int cond, int reg);
@@ -62,61 +116,13 @@ void gc_cmp3(int reg);
 void gc_ucomiss(int reg2, int reg1);
 void gc_jmp(int lab);
 int gc_jcmp(int cond, int lab);
-void gc_mov(int reg2, int reg1);
-void gc_shrl(int bit, int reg);
-void gc_xor(int reg);
-void gc_xor2(int reg2, int reg1);
+
 void gc_xorb(int reg2, int reg1);
-void gc_add(int reg2, int reg1);
-void gc_add2(int v, int reg1);
-void gc_sub(int reg2, int reg1);
 void gc_mul(int reg2, int reg1);
-void gc_mul2(int v, int reg);
 void gc_div(int reg2, int reg1);
 void gc_mod(int reg2, int reg1);
-void gc_leaq(int offset, int reg);
-void gc_leaq2(int lab, int reg);
-void gc_leaq3(char *name, int reg);
-void gc_addss(int reg2, int reg1);
-void gc_subss(int reg2, int reg1);
-void gc_mulss(int reg2, int reg1);
-void gc_divss(int reg2, int reg1);
-void gc_and(int reg2, int reg1);
-void gc_xchgq(int reg1, int reg2);
-void gc_shift(int op, int count, int reg);
-void gc_load(int offset, int reg);
-void gc_load_integer(int v, int reg);
-void gc_load_uinteger(unsigned int v, int reg);
-void gc_load_imm(int reg2, int reg1);
-void gc_load_immsb(int reg2, int reg1);
-void gc_load_imm2(int reg2, int reg1);
-void gc_load_offset(int reg1);
-void gc_load_offset2(int reg2, int reg1);
-void gc_loadss(int offset, int reg);
-void gc_loadsb(int offset, int reg);
-void gc_loadb(int reg2, int reg1);
-void gc_store_integer_literal(int v, int offset);
-void gc_store_byte_literal(int v, int offset);
-void gc_store_regb(int reg, int v);
-void gc_load_globl(char *name, int rh);
-void gc_load_globlss(char *name, int rhf);
-void gc_load_globlsb(char *name, int rh);
-void gc_store_reg(int reg, int v);
-void gc_store_reg2(int reg2, int reg1);
-void gc_store_regss(int reg, int v);
-void gc_store_regsb(int reg, int v);
-void gc_storeb(int reg2, int reg1);
-void gc_store_reg2globl(int reg, char *name);
-void gc_store_reg2globlss(int reg, char *name);
-void gc_store_reg2globlb(int reg, char *name);
-void gc_store_reg2imm(int reg2, int reg1);
-void gc_store_regss2imm(int reg2, int reg1);
-void gc_store_bool_literal(int v, char*name);
-void gc_call(char *s);
-void gc_call2(char *s);
 
-void gc_byte_literal(int reg, int v);
-void gc_integer_literal(int reg, int v);
-void gc_real_literal(int reg, int v);
-void gc_long_int(long int v);
+void gc_call(char *s);
+
+
 #endif

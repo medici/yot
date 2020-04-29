@@ -25,7 +25,7 @@ module integer
         ii := 0fffh;
         Text.WriteInt(ii);
         Text.WriteLn;
-(*
+
         ii := 20h;
         Text.WriteInt(ii);
         Text.WriteLn;
@@ -53,6 +53,6 @@ module integer
         Text.WriteLn;
         i := i / j;
         Text.WriteInt(i);
-        Text.WriteLn *)
+        Text.WriteLn 
     end;
 end.

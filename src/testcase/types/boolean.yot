@@ -3,9 +3,13 @@ module boolean
     const
         tru* = true;
         fls = false;
+    var bb : boolean;
 
     func main ()
         |
+        const
+        tru = true;
+        fls = false;
             var i, j: integer;
                 b : boolean;
         |
@@ -24,11 +28,6 @@ module boolean
         Text.WriteBool(b);
         Text.WriteLn;
 
-
-        b := true;
-        Text.WriteBool(b);
-        Text.WriteLn;
-
         b := false;
         Text.WriteBool(b);
         Text.WriteLn;
@@ -42,6 +41,14 @@ module boolean
         Text.WriteBool(b);
         Text.WriteLn;
 
+        b := (i > j) & (i < j) or ((i # j) & ((i > j) & (i <= j)));
+        Text.WriteBool(b);
+        Text.WriteLn;
+
+
+        bb := true;
+        Text.WriteBool(bb);
+        Text.WriteLn;
         b := fls or (tru & fls or (tru & fls or tru));
         Text.WriteBool(b);
         Text.WriteLn;
@@ -61,9 +68,7 @@ module boolean
         Text.WriteBool(b);
         Text.WriteLn;
 
-        b := (i > j) & (i < j) or ((i # j) & ((i > j) & (i <= j)));
-        Text.WriteBool(b);
-        Text.WriteLn;
+        
         b := (i >= j) & (i # j);
         Text.WriteBool(b);
         Text.WriteLn;
