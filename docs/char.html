@@ -6,8 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
-
-    <link href="http://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">
     <style type="text/css">
       
     </style>
@@ -15,27 +13,26 @@
     <link href="css/colors.css" rel="stylesheet">
 
           <style type="text/css">
-    pre > code.sourceCode { white-space: pre; position: relative; }
-    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-    pre > code.sourceCode > span:empty { height: 1.2em; }
-    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    a.sourceLine { display: inline-block; line-height: 1.25; }
+    a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+    a.sourceLine:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode { white-space: pre; position: relative; }
     div.sourceCode { margin: 1em 0; }
     pre.sourceCode { margin: 0; }
     @media screen {
     div.sourceCode { overflow: auto; }
     }
     @media print {
-    pre > code.sourceCode { white-space: pre-wrap; }
-    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    code.sourceCode { white-space: pre-wrap; }
+    a.sourceLine { text-indent: -1em; padding-left: 1em; }
     }
-    pre.numberSource code
-      { counter-reset: source-line 0; }
-    pre.numberSource code > span
-      { position: relative; left: -4em; counter-increment: source-line; }
-    pre.numberSource code > span > a:first-child::before
-      { content: counter(source-line);
+    pre.numberSource a.sourceLine
+      { position: relative; left: -4em; }
+    pre.numberSource a.sourceLine::before
+      { content: attr(title);
         position: relative; left: -1em; text-align: right; vertical-align: baseline;
-        border: none; display: inline-block;
+        border: none; pointer-events: all; display: inline-block;
         -webkit-touch-callout: none; -webkit-user-select: none;
         -khtml-user-select: none; -moz-user-select: none;
         -ms-user-select: none; user-select: none;
@@ -44,9 +41,9 @@
       }
     pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
     div.sourceCode
-      {   }
+      {  }
     @media screen {
-    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    a.sourceLine::before { text-decoration: underline; }
     }
     code span.al { color: #ff0000; font-weight: bold; } /* Alert */
     code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -83,7 +80,7 @@
 
   <body>
 
-    <div>
+    <div id="content">
 
         <div class="row">
 
@@ -93,8 +90,7 @@
               <li><a href="https://github.com/medici/yot">Github</a></li>
               </ul>
               <ul>
-              <li><a href="#字符类型">字符类型</a>
-              <ul>
+              <li><a href="#字符类型">字符类型</a><ul>
               <li><a href="#表示">表示</a></li>
               <li><a href="#转换">转换</a></li>
               <li><a href="#打印">打印</a></li>
@@ -107,62 +103,66 @@
 <h1 id="字符类型">字符类型</h1>
 <h2 id="表示">表示</h2>
 <p>字符类型是<a href="https://www.asciitable.com/">ASCII 码</a>的16进制表示，以字符<code>x</code>结束；当值以字母开头时，前面应加数字<code>0</code>，以例跟变量名区分：</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode pascal"><code class="sourceCode pascal"><span id="cb1-1"><a href="#cb1-1"></a>    <span class="kw">const</span> </span>
-<span id="cb1-2"><a href="#cb1-2"></a>        ln = 0ax; <span class="co">(* 换行符 *)</span></span>
-<span id="cb1-3"><a href="#cb1-3"></a>        A  = 41x; <span class="co">(* 大写字母 A *)</span></span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode pascal"><code class="sourceCode pascal"><a class="sourceLine" id="cb1-1" title="1">    <span class="kw">const</span> </a>
+<a class="sourceLine" id="cb1-2" title="2">        ln = 0ax; <span class="co">(* 换行符 *)</span></a>
+<a class="sourceLine" id="cb1-3" title="3">        A  = 41x; <span class="co">(* 大写字母 A *)</span></a></code></pre></div>
 <p>或者用长度为1的字符串表示：</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode pascal"><code class="sourceCode pascal"><span id="cb2-1"><a href="#cb2-1"></a>    <span class="kw">var</span> ch : <span class="dt">char</span>;</span>
-<span id="cb2-2"><a href="#cb2-2"></a>    ch := &quot;c&quot;;</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode pascal"><code class="sourceCode pascal"><a class="sourceLine" id="cb2-1" title="1">    <span class="kw">var</span> ch : <span class="dt">char</span>;</a>
+<a class="sourceLine" id="cb2-2" title="2">    ch := &quot;c&quot;;</a></code></pre></div>
 <h2 id="转换">转换</h2>
 <p><code>Ord</code>函数可把字符转为ASCII 码的10进制表示：</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode pascal"><code class="sourceCode pascal"><span id="cb3-1"><a href="#cb3-1"></a>    <span class="kw">const</span> </span>
-<span id="cb3-2"><a href="#cb3-2"></a>        A  = 41x; <span class="co">(* 大写字母 A *)</span></span>
-<span id="cb3-3"><a href="#cb3-3"></a>    <span class="kw">var</span> i :<span class="dt">integer</span>;</span>
-<span id="cb3-4"><a href="#cb3-4"></a></span>
-<span id="cb3-5"><a href="#cb3-5"></a>    i := Ord(A); <span class="co">(* i 等于 65 *)</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode pascal"><code class="sourceCode pascal"><a class="sourceLine" id="cb3-1" title="1">    <span class="kw">const</span> </a>
+<a class="sourceLine" id="cb3-2" title="2">        A  = 41x; <span class="co">(* 大写字母 A *)</span></a>
+<a class="sourceLine" id="cb3-3" title="3">    <span class="kw">var</span> i :<span class="dt">integer</span>;</a>
+<a class="sourceLine" id="cb3-4" title="4"></a>
+<a class="sourceLine" id="cb3-5" title="5">    i := Ord(A); <span class="co">(* i 等于 65 *)</span></a></code></pre></div>
 <h2 id="打印">打印</h2>
 <p><code>Write</code>函数可直接打印字符：</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode pascal"><code class="sourceCode pascal"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">module</span> <span class="dt">char</span>;</span>
-<span id="cb4-2"><a href="#cb4-2"></a>    <span class="kw">const</span> </span>
-<span id="cb4-3"><a href="#cb4-3"></a>        ln = 0ax; <span class="co">(* 换行符 *)</span></span>
-<span id="cb4-4"><a href="#cb4-4"></a>        A  = 41x; <span class="co">(* 大写字母 A *)</span></span>
-<span id="cb4-5"><a href="#cb4-5"></a>        B  = 42x; <span class="co">(* 大写字母 B *)</span></span>
-<span id="cb4-6"><a href="#cb4-6"></a>        C  = 43x; <span class="co">(* 大写字母 C *)</span></span>
-<span id="cb4-7"><a href="#cb4-7"></a></span>
-<span id="cb4-8"><a href="#cb4-8"></a>    func main()</span>
-<span id="cb4-9"><a href="#cb4-9"></a>        <span class="kw">Write</span>(A);</span>
-<span id="cb4-10"><a href="#cb4-10"></a>        <span class="kw">Write</span>(ln);</span>
-<span id="cb4-11"><a href="#cb4-11"></a>        <span class="kw">Write</span>(B);</span>
-<span id="cb4-12"><a href="#cb4-12"></a>        <span class="kw">Write</span>(ln);</span>
-<span id="cb4-13"><a href="#cb4-13"></a>        <span class="kw">Write</span>(C);</span>
-<span id="cb4-14"><a href="#cb4-14"></a>        <span class="kw">Write</span>(ln);</span>
-<span id="cb4-15"><a href="#cb4-15"></a>    <span class="kw">end</span>;</span>
-<span id="cb4-16"><a href="#cb4-16"></a></span>
-<span id="cb4-17"><a href="#cb4-17"></a><span class="kw">end</span>.</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode pascal"><code class="sourceCode pascal"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">module</span> <span class="dt">char</span>;</a>
+<a class="sourceLine" id="cb4-2" title="2">    <span class="kw">const</span> </a>
+<a class="sourceLine" id="cb4-3" title="3">        ln = 0ax; <span class="co">(* 换行符 *)</span></a>
+<a class="sourceLine" id="cb4-4" title="4">        A  = 41x; <span class="co">(* 大写字母 A *)</span></a>
+<a class="sourceLine" id="cb4-5" title="5">        B  = 42x; <span class="co">(* 大写字母 B *)</span></a>
+<a class="sourceLine" id="cb4-6" title="6">        C  = 43x; <span class="co">(* 大写字母 C *)</span></a>
+<a class="sourceLine" id="cb4-7" title="7"></a>
+<a class="sourceLine" id="cb4-8" title="8">    func main()</a>
+<a class="sourceLine" id="cb4-9" title="9">        <span class="kw">Write</span>(A);</a>
+<a class="sourceLine" id="cb4-10" title="10">        <span class="kw">Write</span>(ln);</a>
+<a class="sourceLine" id="cb4-11" title="11">        <span class="kw">Write</span>(B);</a>
+<a class="sourceLine" id="cb4-12" title="12">        <span class="kw">Write</span>(ln);</a>
+<a class="sourceLine" id="cb4-13" title="13">        <span class="kw">Write</span>(C);</a>
+<a class="sourceLine" id="cb4-14" title="14">        <span class="kw">Write</span>(ln);</a>
+<a class="sourceLine" id="cb4-15" title="15">    <span class="kw">end</span>;</a>
+<a class="sourceLine" id="cb4-16" title="16"></a>
+<a class="sourceLine" id="cb4-17" title="17"><span class="kw">end</span>.</a></code></pre></div>
 <p>执行这段代码，结果如下：</p>
 <pre class="shell"><code>    A
     B
     C</code></pre>
 <h2 id="比较">比较</h2>
 <p>字符类型的比较操作符有<code>=</code>，<code>#</code>，<code>&gt;=</code>， <code>&gt;</code>，<code>&lt;=</code>，<code>&lt;</code>；本质是对比字符的10进制大小：</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode pascal"><code class="sourceCode pascal"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">module</span> <span class="dt">char</span>;</span>
-<span id="cb6-2"><a href="#cb6-2"></a>    func main()</span>
-<span id="cb6-3"><a href="#cb6-3"></a>    |</span>
-<span id="cb6-4"><a href="#cb6-4"></a>        <span class="kw">var</span> </span>
-<span id="cb6-5"><a href="#cb6-5"></a>            bool : <span class="dt">boolean</span>;</span>
-<span id="cb6-6"><a href="#cb6-6"></a>            c1, c2: <span class="dt">char</span>;</span>
-<span id="cb6-7"><a href="#cb6-7"></a>    |</span>
-<span id="cb6-8"><a href="#cb6-8"></a>        c1 := &quot;a&quot;;</span>
-<span id="cb6-9"><a href="#cb6-9"></a>        c2 := &quot;b&quot;;</span>
-<span id="cb6-10"><a href="#cb6-10"></a>        bool := c1 &gt; c2; <span class="co">(* false *)</span></span>
-<span id="cb6-11"><a href="#cb6-11"></a>        bool := c1 <span class="st"># </span>c2; <span class="co">(* true *)</span></span>
-<span id="cb6-12"><a href="#cb6-12"></a>        bool := c1 = &quot;a&quot;; <span class="co">(* true *)</span></span>
-<span id="cb6-13"><a href="#cb6-13"></a>    <span class="kw">end</span>;</span>
-<span id="cb6-14"><a href="#cb6-14"></a><span class="kw">end</span>.</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode pascal"><code class="sourceCode pascal"><a class="sourceLine" id="cb6-1" title="1"><span class="kw">module</span> <span class="dt">char</span>;</a>
+<a class="sourceLine" id="cb6-2" title="2">    func main()</a>
+<a class="sourceLine" id="cb6-3" title="3">    |</a>
+<a class="sourceLine" id="cb6-4" title="4">        <span class="kw">var</span> </a>
+<a class="sourceLine" id="cb6-5" title="5">            bool : <span class="dt">boolean</span>;</a>
+<a class="sourceLine" id="cb6-6" title="6">            c1, c2: <span class="dt">char</span>;</a>
+<a class="sourceLine" id="cb6-7" title="7">    |</a>
+<a class="sourceLine" id="cb6-8" title="8">        c1 := &quot;a&quot;;</a>
+<a class="sourceLine" id="cb6-9" title="9">        c2 := &quot;b&quot;;</a>
+<a class="sourceLine" id="cb6-10" title="10">        bool := c1 &gt; c2; <span class="co">(* false *)</span></a>
+<a class="sourceLine" id="cb6-11" title="11">        bool := c1 <span class="st"># </span>c2; <span class="co">(* true *)</span></a>
+<a class="sourceLine" id="cb6-12" title="12">        bool := c1 = &quot;a&quot;; <span class="co">(* true *)</span></a>
+<a class="sourceLine" id="cb6-13" title="13">    <span class="kw">end</span>;</a>
+<a class="sourceLine" id="cb6-14" title="14"><span class="kw">end</span>.</a></code></pre></div>
           </div>
         </div>
 
     </div>
+
+    <footer style="text-align: center; padding: 30px; margin-top: 100px;">
+        <a href="http://www.beian.miit.gov.cn">粤ICP备19160128号</a>
+    </footer>
     <script src="https://code.jquery.com/jquery.js"></script>
     <script src="js/nav.js"></script>
   </body>

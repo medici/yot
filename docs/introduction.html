@@ -6,8 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
-
-    <link href="http://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">
     <style type="text/css">
       
     </style>
@@ -15,27 +13,26 @@
     <link href="css/colors.css" rel="stylesheet">
 
           <style type="text/css">
-    pre > code.sourceCode { white-space: pre; position: relative; }
-    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-    pre > code.sourceCode > span:empty { height: 1.2em; }
-    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    a.sourceLine { display: inline-block; line-height: 1.25; }
+    a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+    a.sourceLine:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode { white-space: pre; position: relative; }
     div.sourceCode { margin: 1em 0; }
     pre.sourceCode { margin: 0; }
     @media screen {
     div.sourceCode { overflow: auto; }
     }
     @media print {
-    pre > code.sourceCode { white-space: pre-wrap; }
-    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    code.sourceCode { white-space: pre-wrap; }
+    a.sourceLine { text-indent: -1em; padding-left: 1em; }
     }
-    pre.numberSource code
-      { counter-reset: source-line 0; }
-    pre.numberSource code > span
-      { position: relative; left: -4em; counter-increment: source-line; }
-    pre.numberSource code > span > a:first-child::before
-      { content: counter(source-line);
+    pre.numberSource a.sourceLine
+      { position: relative; left: -4em; }
+    pre.numberSource a.sourceLine::before
+      { content: attr(title);
         position: relative; left: -1em; text-align: right; vertical-align: baseline;
-        border: none; display: inline-block;
+        border: none; pointer-events: all; display: inline-block;
         -webkit-touch-callout: none; -webkit-user-select: none;
         -khtml-user-select: none; -moz-user-select: none;
         -ms-user-select: none; user-select: none;
@@ -44,9 +41,9 @@
       }
     pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
     div.sourceCode
-      {   }
+      {  }
     @media screen {
-    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    a.sourceLine::before { text-decoration: underline; }
     }
     code span.al { color: #ff0000; font-weight: bold; } /* Alert */
     code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -83,7 +80,7 @@
 
   <body>
 
-    <div>
+    <div id="content">
 
         <div class="row">
 
@@ -93,8 +90,7 @@
               <li><a href="https://github.com/medici/yot">Github</a></li>
               </ul>
               <ul>
-              <li><a href="#入门">入门</a>
-              <ul>
+              <li><a href="#入门">入门</a><ul>
               <li><a href="#module">Module</a></li>
               <li><a href="#function">Function</a></li>
               <li><a href="#数据类型">数据类型</a></li>
@@ -106,75 +102,79 @@
 <h1 id="入门">入门</h1>
 <h2 id="module">Module</h2>
 <p>模块必须以常量、类型、变量、函数的顺序进行声明，否则编译器会报错：</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode pascal"><code class="sourceCode pascal"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">module</span> hello_world</span>
-<span id="cb1-2"><a href="#cb1-2"></a>  <span class="kw">const</span> str = &quot;hello world&quot;; <span class="co">(* 这里是常量声明 *)</span></span>
-<span id="cb1-3"><a href="#cb1-3"></a></span>
-<span id="cb1-4"><a href="#cb1-4"></a>  <span class="kw">var</span> i, j : <span class="dt">integer</span>;  <span class="co">(* 这里是变量声明 *)</span></span>
-<span id="cb1-5"><a href="#cb1-5"></a></span>
-<span id="cb1-6"><a href="#cb1-6"></a>  func WriteString(s: <span class="kw">array</span> <span class="kw">of</span> <span class="dt">char</span>) <span class="co">(* 这里是函数声明 *)</span></span>
-<span id="cb1-7"><a href="#cb1-7"></a>    |</span>
-<span id="cb1-8"><a href="#cb1-8"></a>      <span class="kw">var</span> i: <span class="dt">integer</span>;</span>
-<span id="cb1-9"><a href="#cb1-9"></a>    |</span>
-<span id="cb1-10"><a href="#cb1-10"></a>    i := <span class="dv">0</span>;</span>
-<span id="cb1-11"><a href="#cb1-11"></a>    <span class="kw">while</span> s[i] <span class="st"># </span>0x <span class="kw">do</span> </span>
-<span id="cb1-12"><a href="#cb1-12"></a>      <span class="kw">Write</span>(s[i]);</span>
-<span id="cb1-13"><a href="#cb1-13"></a>      i := i + <span class="dv">1</span></span>
-<span id="cb1-14"><a href="#cb1-14"></a>    <span class="kw">end</span>;</span>
-<span id="cb1-15"><a href="#cb1-15"></a>  <span class="kw">end</span>;</span>
-<span id="cb1-16"><a href="#cb1-16"></a></span>
-<span id="cb1-17"><a href="#cb1-17"></a>  func main() </span>
-<span id="cb1-18"><a href="#cb1-18"></a>    WriteString(str);</span>
-<span id="cb1-19"><a href="#cb1-19"></a>  <span class="kw">end</span>;</span>
-<span id="cb1-20"><a href="#cb1-20"></a><span class="kw">end</span>.</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode pascal"><code class="sourceCode pascal"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">module</span> hello_world</a>
+<a class="sourceLine" id="cb1-2" title="2">  <span class="kw">const</span> str = &quot;hello world&quot;; <span class="co">(* 这里是常量声明 *)</span></a>
+<a class="sourceLine" id="cb1-3" title="3"></a>
+<a class="sourceLine" id="cb1-4" title="4">  <span class="kw">var</span> i, j : <span class="dt">integer</span>;  <span class="co">(* 这里是变量声明 *)</span></a>
+<a class="sourceLine" id="cb1-5" title="5"></a>
+<a class="sourceLine" id="cb1-6" title="6">  func WriteString(s: <span class="kw">array</span> <span class="kw">of</span> <span class="dt">char</span>) <span class="co">(* 这里是函数声明 *)</span></a>
+<a class="sourceLine" id="cb1-7" title="7">    |</a>
+<a class="sourceLine" id="cb1-8" title="8">      <span class="kw">var</span> i: <span class="dt">integer</span>;</a>
+<a class="sourceLine" id="cb1-9" title="9">    |</a>
+<a class="sourceLine" id="cb1-10" title="10">    i := <span class="dv">0</span>;</a>
+<a class="sourceLine" id="cb1-11" title="11">    <span class="kw">while</span> s[i] <span class="st"># </span>0x <span class="kw">do</span> </a>
+<a class="sourceLine" id="cb1-12" title="12">      <span class="kw">Write</span>(s[i]);</a>
+<a class="sourceLine" id="cb1-13" title="13">      i := i + <span class="dv">1</span></a>
+<a class="sourceLine" id="cb1-14" title="14">    <span class="kw">end</span>;</a>
+<a class="sourceLine" id="cb1-15" title="15">  <span class="kw">end</span>;</a>
+<a class="sourceLine" id="cb1-16" title="16"></a>
+<a class="sourceLine" id="cb1-17" title="17">  func main() </a>
+<a class="sourceLine" id="cb1-18" title="18">    WriteString(str);</a>
+<a class="sourceLine" id="cb1-19" title="19">  <span class="kw">end</span>;</a>
+<a class="sourceLine" id="cb1-20" title="20"><span class="kw">end</span>.</a></code></pre></div>
 <p>模块名称必须与文件名称一致；模块以<code>end</code>与<code>.</code>结束。</p>
 <h2 id="function">Function</h2>
 <p>函数可以包含函数。所有的常量、变量、函数声明必须放在 <code>|</code> <code>|</code> 之间；并且按照常量、变量、类型、函数的顺序进行声明。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode pascal"><code class="sourceCode pascal"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">module</span> hello_world</span>
-<span id="cb2-2"><a href="#cb2-2"></a>  <span class="kw">import</span> <span class="dt">Text</span>;</span>
-<span id="cb2-3"><a href="#cb2-3"></a></span>
-<span id="cb2-4"><a href="#cb2-4"></a>  func main()</span>
-<span id="cb2-5"><a href="#cb2-5"></a>    |</span>
-<span id="cb2-6"><a href="#cb2-6"></a>      <span class="kw">const</span> str = &quot;hello world&quot;;</span>
-<span id="cb2-7"><a href="#cb2-7"></a>    |</span>
-<span id="cb2-8"><a href="#cb2-8"></a></span>
-<span id="cb2-9"><a href="#cb2-9"></a>    <span class="dt">Text</span>.WriteString(str);</span>
-<span id="cb2-10"><a href="#cb2-10"></a>    <span class="dt">Text</span>.WriteLn</span>
-<span id="cb2-11"><a href="#cb2-11"></a>  <span class="kw">end</span>;</span>
-<span id="cb2-12"><a href="#cb2-12"></a><span class="kw">end</span>.</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode pascal"><code class="sourceCode pascal"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">module</span> hello_world</a>
+<a class="sourceLine" id="cb2-2" title="2">  <span class="kw">import</span> <span class="dt">Text</span>;</a>
+<a class="sourceLine" id="cb2-3" title="3"></a>
+<a class="sourceLine" id="cb2-4" title="4">  func main()</a>
+<a class="sourceLine" id="cb2-5" title="5">    |</a>
+<a class="sourceLine" id="cb2-6" title="6">      <span class="kw">const</span> str = &quot;hello world&quot;;</a>
+<a class="sourceLine" id="cb2-7" title="7">    |</a>
+<a class="sourceLine" id="cb2-8" title="8"></a>
+<a class="sourceLine" id="cb2-9" title="9">    <span class="dt">Text</span>.WriteString(str);</a>
+<a class="sourceLine" id="cb2-10" title="10">    <span class="dt">Text</span>.WriteLn</a>
+<a class="sourceLine" id="cb2-11" title="11">  <span class="kw">end</span>;</a>
+<a class="sourceLine" id="cb2-12" title="12"><span class="kw">end</span>.</a></code></pre></div>
 <h2 id="数据类型">数据类型</h2>
 <p>yotlang 支持的数据类型有integer, boolean, real, char ,array, record。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode pascal"><code class="sourceCode pascal"><span id="cb3-1"><a href="#cb3-1"></a></span>
-<span id="cb3-2"><a href="#cb3-2"></a><span class="kw">module</span> datatype</span>
-<span id="cb3-3"><a href="#cb3-3"></a></span>
-<span id="cb3-4"><a href="#cb3-4"></a>  <span class="kw">const</span> int = <span class="dv">18</span>;</span>
-<span id="cb3-5"><a href="#cb3-5"></a></span>
-<span id="cb3-6"><a href="#cb3-6"></a>  <span class="kw">type</span> </span>
-<span id="cb3-7"><a href="#cb3-7"></a>    person = <span class="kw">record</span>              <span class="co">(* record *)</span></span>
-<span id="cb3-8"><a href="#cb3-8"></a>      name : <span class="kw">array</span> <span class="dv">32</span> <span class="kw">of</span> <span class="dt">char</span>;   <span class="co">(* array  *)</span></span>
-<span id="cb3-9"><a href="#cb3-9"></a>      age  : <span class="dt">integer</span>;</span>
-<span id="cb3-10"><a href="#cb3-10"></a>    <span class="kw">end</span>;</span>
-<span id="cb3-11"><a href="#cb3-11"></a></span>
-<span id="cb3-12"><a href="#cb3-12"></a>  <span class="kw">var</span> i : <span class="dt">integer</span>;</span>
-<span id="cb3-13"><a href="#cb3-13"></a>      r : <span class="dt">real</span>;</span>
-<span id="cb3-14"><a href="#cb3-14"></a>      c : <span class="dt">char</span>;</span>
-<span id="cb3-15"><a href="#cb3-15"></a>      obj : person;</span>
-<span id="cb3-16"><a href="#cb3-16"></a></span>
-<span id="cb3-17"><a href="#cb3-17"></a></span>
-<span id="cb3-18"><a href="#cb3-18"></a>  func main()</span>
-<span id="cb3-19"><a href="#cb3-19"></a>    i := int;</span>
-<span id="cb3-20"><a href="#cb3-20"></a>    r := <span class="dv">16.66</span>;</span>
-<span id="cb3-21"><a href="#cb3-21"></a>    c := 0bx;</span>
-<span id="cb3-22"><a href="#cb3-22"></a>    obj.name = &quot;harry potter&quot;;</span>
-<span id="cb3-23"><a href="#cb3-23"></a>    obj.age = <span class="dv">6</span>;</span>
-<span id="cb3-24"><a href="#cb3-24"></a>  <span class="kw">end</span>;</span>
-<span id="cb3-25"><a href="#cb3-25"></a></span>
-<span id="cb3-26"><a href="#cb3-26"></a><span class="kw">end</span>.</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode pascal"><code class="sourceCode pascal"><a class="sourceLine" id="cb3-1" title="1"></a>
+<a class="sourceLine" id="cb3-2" title="2"><span class="kw">module</span> datatype</a>
+<a class="sourceLine" id="cb3-3" title="3"></a>
+<a class="sourceLine" id="cb3-4" title="4">  <span class="kw">const</span> int = <span class="dv">18</span>;</a>
+<a class="sourceLine" id="cb3-5" title="5"></a>
+<a class="sourceLine" id="cb3-6" title="6">  <span class="kw">type</span> </a>
+<a class="sourceLine" id="cb3-7" title="7">    person = <span class="kw">record</span>              <span class="co">(* record *)</span></a>
+<a class="sourceLine" id="cb3-8" title="8">      name : <span class="kw">array</span> <span class="dv">32</span> <span class="kw">of</span> <span class="dt">char</span>;   <span class="co">(* array  *)</span></a>
+<a class="sourceLine" id="cb3-9" title="9">      age  : <span class="dt">integer</span>;</a>
+<a class="sourceLine" id="cb3-10" title="10">    <span class="kw">end</span>;</a>
+<a class="sourceLine" id="cb3-11" title="11"></a>
+<a class="sourceLine" id="cb3-12" title="12">  <span class="kw">var</span> i : <span class="dt">integer</span>;</a>
+<a class="sourceLine" id="cb3-13" title="13">      r : <span class="dt">real</span>;</a>
+<a class="sourceLine" id="cb3-14" title="14">      c : <span class="dt">char</span>;</a>
+<a class="sourceLine" id="cb3-15" title="15">      obj : person;</a>
+<a class="sourceLine" id="cb3-16" title="16"></a>
+<a class="sourceLine" id="cb3-17" title="17"></a>
+<a class="sourceLine" id="cb3-18" title="18">  func main()</a>
+<a class="sourceLine" id="cb3-19" title="19">    i := int;</a>
+<a class="sourceLine" id="cb3-20" title="20">    r := <span class="dv">16.66</span>;</a>
+<a class="sourceLine" id="cb3-21" title="21">    c := 0bx;</a>
+<a class="sourceLine" id="cb3-22" title="22">    obj.name = &quot;harry potter&quot;;</a>
+<a class="sourceLine" id="cb3-23" title="23">    obj.age = <span class="dv">6</span>;</a>
+<a class="sourceLine" id="cb3-24" title="24">  <span class="kw">end</span>;</a>
+<a class="sourceLine" id="cb3-25" title="25"></a>
+<a class="sourceLine" id="cb3-26" title="26"><span class="kw">end</span>.</a></code></pre></div>
 <p>常量用 <code>=</code> 进行赋值；变量则用 <code>:=</code> 。 字符类型是以 <code>x</code> 结束的16进制；如果值是以’a’, ‘b’, ‘c’, ‘d’, ‘e’,’f’中的一个开头，必须在前面加 <code>0</code>，以便跟变量名区分。</p>
 <p>通用操作符有：<code>=</code>(等于)、<code>#</code>(不等于)、<code>&gt;</code>、 <code>&gt;=</code>、 <code>&lt;</code>、 <code>&lt;=</code>。 布尔操作符有：<code>or</code>、 <code>and</code>、 <code>~</code>。</p>
           </div>
         </div>
 
     </div>
+
+    <footer style="text-align: center; padding: 30px; margin-top: 100px;">
+        <a href="http://www.beian.miit.gov.cn">粤ICP备19160128号</a>
+    </footer>
     <script src="https://code.jquery.com/jquery.js"></script>
     <script src="js/nav.js"></script>
   </body>

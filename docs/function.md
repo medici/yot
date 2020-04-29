@@ -23,7 +23,7 @@
 function vs procedure
 ---------------------
 
- 在 Pascal-like 语言中，function 与 procedure 是不同的实体(entry)--是否有返回值。在行为与语法上也有不同：procedure 调用是语句，你不能在表达式中使用；function 不能单独使用，而是作为其它语句的组成部分。因为，Pascal-bred 程序员能很好地区别这两者。
+ 在 Pascal-like 语言中，function 与 procedure 是不同的实体(entry)；简单地说，就是有没有返回值的区别。procedure 是一系列语句的集合。在行为与语法上也有不同：procedure 调用是语句，你不能在表达式中使用；function 不能单独使用，而是作为其它语句的组成部分。因为，Pascal-bred 程序员能很好地区别这两者。
 
 在 C-like 语言和众多当代语言当中，这两者已经没有区别了；在静态类型语言当中，procedure 只是有特殊返回类型的function。这能说明为什么它们是可互换的。
 
@@ -52,7 +52,6 @@ import Text;
 func Start
 	|
 		var a, b, c, r1, r2, i1, i2 :real
-	
 
 		func ComputeRoots(a, b, c:real, var r1, r2, i1, i2:real) : real
 			r1 := r2 + i1 + i2;
