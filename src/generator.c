@@ -37,27 +37,27 @@ open() {
 
 void 
 gdata(void) {
-	if (Textseg) gcdata();
+	if (Textseg) gc_data();
 	Textseg = 0;
 }
 
 void
 gtext() {
-    if (!Textseg) gctext();
+    if (!Textseg) gc_text();
     Textseg = 1;
 }
 
 
 void
 gentry() {
-    gcentry();
+    gc_entry();
 }
 
 void 
 gstack(int n) {
 	if (n) {
 		gtext();
-		gcstack(n);
+		gc_stack(n);
 	}
 }
 
@@ -123,47 +123,7 @@ gparamters(int nofpar, Object params) {
 void
 gexit(void) {
 	gtext();
-	gcexit();
-}
-
-void
-ng(char *s, char *inst, int n, char *reg) {
-    if (NULL == Outfile) return;
-    fputc('\t', Outfile);
-    fprintf(Outfile, s, inst, n, reg);
-    fputc('\n', Outfile);
-}
-
-void
-ng2(char *s, char *inst, int v, int offset) {
-    if (NULL == Outfile) return;
-    fputc('\t', Outfile);
-    fprintf(Outfile, s, inst, v, offset);
-    fputc('\n', Outfile);
-}
-
-void
-ng3(char *s, int v, char *inst, char *reg) {
-    if (NULL == Outfile) return;
-    fputc('\t', Outfile);
-    fprintf(Outfile, s, v, inst, reg);
-    fputc('\n', Outfile);
-}
-
-void 
-lg(char *s, char *inst, int n) {
-	if (NULL == Outfile) return;
-	fputc('\t', Outfile);
-	fprintf(Outfile, s, inst, LPREFIX, n);
-	fputc('\n', Outfile);
-}
-
-void
-lg2(char *s, int n, char *inst) {
-    if (NULL == Outfile) return;
-    fputc('\t', Outfile);
-    fprintf(Outfile, s, LPREFIX, n, inst);
-    fputc('\n', Outfile);
+	gc_exit();
 }
 
 int
@@ -209,7 +169,7 @@ g_name(char *name) {
 
 void
 gpublic(char *procid) {
-    gcpublic(g_symbol(procid));
+    gc_public(g_symbol(procid));
 }
 
 void
@@ -295,7 +255,7 @@ g_str() {
 
 void
 gprelude(void) {
-	gcprelude();
+	gc_prelude();
 	Textseg = 0;
 	gtext();
 }
@@ -304,7 +264,7 @@ void
 gpostlude(void) {
     g_real();
     g_str();
-	gcpostlude();
+	gc_postlude();
 }
 
 
@@ -366,6 +326,14 @@ sg_binary_operation(char *op, char *opand1, char *opand2) {
 }
 
 void
+ng_unary_operation(char *op, int value) {
+    if (NULL == Outfile) return;
+    fputc('\t', Outfile);
+    fprintf(Outfile, "%s\t$%d", op, value);
+    fputc('\n', Outfile);
+}
+
+void
 ng_binary_operation(char *op, int source, char *destination) {
     if (NULL == Outfile) return;
     fputc('\t', Outfile);
@@ -378,6 +346,14 @@ ng_ternary_operation(char *op, int value, char *source, char *destination) {
     if (NULL == Outfile) return;
     fputc('\t', Outfile);
     fprintf(Outfile, "%s\t%d(%s), %s", op, value, source, destination);
+    fputc('\n', Outfile);
+}
+
+void
+define_data(char *type, int value) {
+    if (NULL == Outfile) return;
+    fputc('\t', Outfile);
+    fprintf(Outfile, "%s\t%d", type, value);
     fputc('\n', Outfile);
 }
 
@@ -423,20 +399,20 @@ lg_cvtss2si(Item x) {
 
 void 
 g_setne(Item x) {
-    gc_setne(x->r);
+    gc_setcc(SETNE, x->r);
     gc_movzx(x->r);
 }
 
 void
 g_cmp2(int reg) {
-    gc_cmp2(reg);
+    gc_binary_value2reg(CMP, 0, reg, IntType->size, IntType->form);
 }
 
 void
 load_compare_expression(Item x) {
     if (x->mode == CCONST) {
         load(x);
-        g_cmp2(x->r);
+        gc_binary_value2reg(CMP, 0, x->r, IntType->size, IntType->form);
     } else {
         if (x->a != 0) {
             Fixup(x->a);
@@ -467,8 +443,8 @@ make_item(Object y) {
     
     if (y->class == CPAR) {
         x->b = 0;
-    } else if (y->class == CCONST && y->type->form == CSTRING) {
-        x->b = y->level;
+    } else if (y->class == CCONST && y->type->form == FSTRING) {
+        x->b = y->level; // length
     } else {
         x->r = y->level;
     }
@@ -615,7 +591,7 @@ load_adr(Item x) {
         gc_load_mm(adr, x->r, x->type->size, x->type->form);
         //gc_load(x->a, x->r);
         incR();
-    }
+    } 
     x->mode = CREG;
 }
 
@@ -640,7 +616,7 @@ void
 load_cond(Item x) {
     if (x->type->form == FBOOLEAN) {
         load(x);             
-        gc_cmp2(x->r);
+        gc_binary_value2reg(CMP, 0, x->r, IntType->size, IntType->form);
         x->c = NEQ - EQL;
         
         x->mode = CCOND;
@@ -713,7 +689,7 @@ void
 call(Item x, int r[2], char *name) {
     gc_call(g_symbol(name));
 
-    Object dsc = x->type->dsc;
+    Object dsc = x->type->dscobj;
     int nofpar = x->type->nofpar;
     int j;
     for (j =0; j<nofpar; j++) {
@@ -773,25 +749,25 @@ neg(Item x) {
         } else if (x->r > 0) { 
             destination = gc_relative_adr(x->a);
             sg_unary_operation(FLDS, destination);
-            gcstack(-WORDSIZE);
+            gc_stack(-WORDSIZE);
             destination = gc_reference(rSP);
             ng_binary_operation(MOV, 0, destination);
             sg_unary_operation(FLDS, destination);
             sg_operator(FSUBP);
             destination = gc_relative_adr(x->a);
             sg_unary_operation(FSTS, destination);
-            gcstack(WORDSIZE);
+            gc_stack(WORDSIZE);
         } else {
             destination = gc_absolute_adr(x->name);
             sg_unary_operation(FLDS, destination);
-            gcstack(-WORDSIZE);
+            gc_stack(-WORDSIZE);
             destination = gc_reference(rSP);
             ng_binary_operation(MOV, 0, destination);
             sg_unary_operation(FLDS, destination);
             sg_operator(FSUBP);
             destination = gc_absolute_adr(x->name);
             sg_unary_operation(FSTS, destination);
-            gcstack(WORDSIZE);
+            gc_stack(WORDSIZE);
         }
         
     }
@@ -830,7 +806,7 @@ negated(int cond) {
 
 void
 setCC(Item x, int op) {
-    gc_cmp2(x->r);
+    gc_binary_value2reg(CMP, 0, x->r, IntType->size, IntType->form);
     x->c = NEQ - EQL;
     
     x->mode = CCOND;
@@ -845,7 +821,7 @@ int_relation(int op, Item x, Item y) {
     }
     load(x);
     load(y);
-    gc_cmp(y->r, x->r);
+    gc_binary_reg2reg(CMP, y->r, x->r, IntType->size, IntType->form);
     gc_setop(op - EQL, x->r);
     --RH;
     --RH;
@@ -859,7 +835,7 @@ real_relation(int op, Item x, Item y) {
     }
     load(x);
     load(y);
-    gc_ucomiss(y->r, x->r);
+    gc_binary_reg2reg(UCOMISS, y->r, x->r, RealType->size, RealType->form);
     gc_setopss(op - EQL, x->r);
     --RHF;
     --RHF;
@@ -900,7 +876,7 @@ For0(Item x, Item y) {
 void
 For1(Item x, Item y, Item z, Item w, int lab) {
     load(z);
-    gc_cmp(z->r, y->r);
+    gc_binary_reg2reg(CMP, z->r, y->r, IntType->size, IntType->form);
     --RH;
 
     if (w->a > 0) {
@@ -1123,10 +1099,28 @@ field(Item x, Object y) {
     }
 }
 
+// https://www.tutorialspoint.com/assembly_programming/assembly_movs_instruction.htm
 void
 copy_string(Item x, Item y) {
     gtext();
     int len = x->type->len;
+    int r = RH;
+    int xmode = x->mode;
+
+    if (r >= 3) {
+        sg_unary_operation(PUSH, rCX);
+        sg_unary_operation(PUSH, rDI);
+        sg_unary_operation(PUSH, rSI);
+        RH = RH - 3;
+    } else if (r >= 2) {
+        sg_unary_operation(PUSH, rDI);
+        sg_unary_operation(PUSH, rSI);
+        RH = RH - 2;
+    } else if (r >= 1 && !(xmode == CREGI && x->r == 0)) {
+        sg_unary_operation(PUSH, rDI);
+        RH = RH - 1;
+    }
+
     load_adr(x);
 
     if (len >= 0) {
@@ -1136,15 +1130,35 @@ copy_string(Item x, Item y) {
     }
 
     load_string_adr(y);
-    int lab = label();
-    Fixup(lab);
-    gc_load_rmm(y->r, RH, x->type->base->size, FCHAR);
-    gc_store_reg2rmm(RH, x->r, x->type->base->size, x->type->base->form);
-    gc_binary_value2reg(ADD, 1, y->r, y->type->size, y->type->form);
-    gc_binary_value2reg(ADD, 1, x->r, x->type->size, x->type->form);
-    gc_cmp2(RH);
-    gc_jcmp(NEQ - EQL, lab);
+    gc_load_value(y->b, rCXI, IntType->form);
+
+    sg_operator(CLD);
+    sg_unary_operation(REP, MOVSB);
+
     RH = RH - 2;
+    if (r >= 3) {
+        sg_unary_operation(POP, rSI);
+        sg_unary_operation(POP, rDI);
+        sg_unary_operation(POP, rCX);
+        RH = RH + 3;
+    } else if (r >= 2) {
+        sg_unary_operation(POP, rSI);
+        sg_unary_operation(POP, rDI);
+        RH = RH + 2;
+    } else if (r >= 1 && !(xmode == CREGI && x->r == 0)) {
+        sg_unary_operation(POP, rDI);
+        RH = RH + 1;
+    }
+
+    // int lab = label();
+    // Fixup(lab);
+    // gc_load_rmm(y->r, RH, x->type->base->size, FCHAR);
+    // gc_store_reg2rmm(RH, x->r, x->type->base->size, x->type->base->form);
+    // gc_binary_value2reg(ADD, 1, y->r, y->type->size, y->type->form);
+    // gc_binary_value2reg(ADD, 1, x->r, x->type->size, x->type->form);
+    // gc_cmp2(RH);
+    // gc_jcmp(NEQ - EQL, lab);
+    
 }
 
 void
@@ -1191,7 +1205,7 @@ prologue(Object proc, int parblksize, int locblksize) {
     g_name(proc->name);
     gentry();
     gstack(-locblksize);
-    gparamters(proc->type->nofpar, proc->type->dsc);
+    gparamters(proc->type->nofpar, proc->type->dscobj);
 }
 
 void
@@ -1207,7 +1221,7 @@ not(Item x) {
         load_cond(x);
     }
     ng_binary_operation(XOR, 1, gc_reg(x->r));
-    gc_cmp2(x->r);
+    gc_binary_value2reg(CMP, 0, x->r, IntType->size, IntType->form);
 }
 
 void
@@ -1279,13 +1293,13 @@ Abs(Item x) {
                 load(x);
                 source = gc_FPUReg(x->r);
                 destination = gc_reference(rSP);
-                gcstack(-WORDSIZE);
+                gc_stack(-WORDSIZE);
                 sg_binary_operation(MOVSS, source, destination);
                 sg_unary_operation(FLDS, destination);
                 sg_operator(FABS);
                 sg_binary_operation(MOVSS, destination, source);
                 sg_unary_operation(FSTS, destination);
-                gcstack(WORDSIZE);
+                gc_stack(WORDSIZE);
             }
             x->type = RealType;
         } else {
@@ -1332,7 +1346,7 @@ Floor(Item x) {
         load(x);
         source = gc_FPUReg(x->r);
         destination = gc_reference(rSP);
-        gcstack(-WORDSIZE);
+        gc_stack(-WORDSIZE);
         sg_binary_operation(MOVSS, source, destination);
         sg_unary_operation(FLDS, destination);
         sg_operator(FRNDINT);
@@ -1341,7 +1355,7 @@ Floor(Item x) {
         sg_binary_operation(CVTSS2SI, gc_FPUReg(x->r), gc_reg(RH));
         x->r = RH;
         incR();
-        gcstack(WORDSIZE);
+        gc_stack(WORDSIZE);
         x->type = IntType;
         --RHF;
     }

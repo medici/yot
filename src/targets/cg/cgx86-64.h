@@ -11,6 +11,7 @@
 #define MOVSS   "movss"
 #define MOVSB   "movsb"
 #define MOVZX   "movzx"
+#define MOVDQU  "movdqu"
 
 #define PUSH    "pushq"
 #define POP     "popq"
@@ -26,13 +27,19 @@
 #define DIVSS   "divss"
 
 #define XOR     "xorq"
+#define XORB    "xorb"
 #define ANDx    "andq"
 #define SAR     "sarq"
 
 
 #define XCHG    "xchgq"
 #define CQO     "cqo"
-#define REP     "rep" 
+#define REP     "rep"
+#define CLD     "cld"
+#define RET     "retq"
+#define CALL    "callq"
+#define CMP     "cmpq"
+#define UCOMISS  "ucomiss"
 
 #define FABS    "fabs"
 #define FLDS    "flds"
@@ -58,6 +65,35 @@
 #define rSP     "%rsp"
 #define rBP     "%rbp"
 
+
+// set cc
+#define SETE    "sete"
+#define SETNP   "setnp"
+#define SETNE   "setne"
+#define SETP    "setp"
+#define SETL    "setl"
+#define SETB    "setb"
+#define SETGE   "setge"
+#define SETAE   "setae"
+#define SETLE   "setle"
+#define SETBE   "setbe"
+#define SETG    "setg"
+#define SETA    "seta"
+
+// jcc
+#define JMP     "jmp"
+#define JE      "je"
+#define JNP     "jnp"
+#define JNE     "jne"
+#define JP      "jp"
+#define JL      "jl"
+#define JB      "jb"
+#define JGE     "jge"
+#define JLE     "jle"
+#define JBE     "jbe"
+#define JG      "jg"
+#define JA      "ja"
+
 enum {
 	BYTE = 1,
 	WORD = 2,
@@ -65,13 +101,13 @@ enum {
 	QUADWORD = 8
 };
 
-void gcdata();
-void gctext();
-void gcpublic(char *s);
-void gcentry();
-void gcexit(void);
-void gcprelude(void);
-void gcpostlude(void);
+void gc_data();
+void gc_text();
+void gc_public(char *s);
+void gc_entry();
+void gc_exit(void);
+void gc_prelude(void);
+void gc_postlude(void);
 
 char* gc_FPUReg(int reg);
 char* gc_reg(int reg);
@@ -99,25 +135,19 @@ void gc_def_byte(int v);
 void gc_def_long(long int v);
 void gc_def_quad(int v);
 
-void gcstack(int n);
-void gcldlab(int id);
+void gc_stack(int n);
 void gc_align(int num);
 void gc_popq_align(int num);
 void gc_pushq(int reg);
 void gc_popq(int reg);
 
 void gc_movzx(int reg);
-void gc_setne(int reg);
+void gc_setcc(char *op, int reg);
 void gc_setop(int cond, int reg);
 void gc_setopss(int cond, int reg);
-void gc_cmp(int reg2, int reg1);
-void gc_cmp2(int reg);
-void gc_cmp3(int reg);
-void gc_ucomiss(int reg2, int reg1);
 void gc_jmp(int lab);
 int gc_jcmp(int cond, int lab);
 
-void gc_xorb(int reg2, int reg1);
 void gc_mul(int reg2, int reg1);
 void gc_div(int reg2, int reg1);
 void gc_mod(int reg2, int reg1);

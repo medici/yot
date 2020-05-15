@@ -26,17 +26,17 @@ char FPURegs[][7] = {
 };
 
 void
-gcdata() {
+gc_data() {
     sg_operator(DATA_LABEL);
 }
 
 void
-gctext() {
+gc_text() {
     sg_operator(TEXT_LABEL);
 }
 
-void gcprelude(void)    { }
-void gcpostlude(void)   { }
+void gc_prelude(void)   { }
+void gc_postlude(void)  { }
 
 int
 gc_stack_align(int size) {
@@ -51,9 +51,9 @@ gc_stack_align(int size) {
 }
 
 void
-gcstack(int n)  {
+gc_stack(int n) {
     n = gc_stack_align(n);
-    ng("%s\t$%d, %s", "addq", n, "%rsp"); 
+    ng_binary_operation(ADD, n, rSP);
 }
 
 char* 
@@ -263,53 +263,48 @@ gc_store_reg2rmm(int reg2, int reg1, int size, int form) {
 
 void
 gc_def_byte(int v) { 
-    ng("%s\t%d", ".byte", v, NULL); 
+    define_data(BYTE_LABEL, v);
 }
 
 void
 gc_def_long(long int v) {
-    ng("%s\t%d", ".long", v, NULL); 
-}
-
-void
-gcldlab(int id) {
-    lg("%s\t%c%d(%%rip), %%rax", "leaq", id); 
+    define_data(LONG_LABEL, v);
 }
 
 void
 gc_def_quad(int v) { 
-    ng("%s\t%d", ".quad", v, NULL);
+    define_data(QUAD_LABEL, v);
 }
 
 void
 gc_align(int num) {
     if (num % 2 == 1) {
-        ng("%s\t$%d", "pushq", 0, NULL); 
+        ng_unary_operation(PUSH, 0);
     }
 }
 
 void
 gc_popq_align(int num) {
     if (num % 2 == 1) {
-        sg("popq\t%s", regs[0], NULL);
+        sg_unary_operation(POP, regs[0]);
     }
 }
 
 void
-gc_call(char *s) {
-    sg("call\t%s", s, NULL);
+gc_call(char *function) {
+    sg_unary_operation(CALL, function);
 }
 
 void
 gc_pushFPU(int reg) {
-    sg("subq\t$16, %%rsp", NULL, NULL);
-    sg("movdqu\t%s, (%%rsp)", FPURegs[reg], NULL);
+    ng_binary_operation(SUB, 16, rSP);
+    sg_binary_operation(MOVDQU, FPURegs[reg], gc_reference(rSP));
 }
 
 void
 gc_popFPU(int reg) {
-    sg("movdqu\t(%%rsp), %s", FPURegs[reg], NULL);
-    sg("addq\t$16, %%rsp", NULL, NULL);
+    sg_binary_operation(MOVDQU, gc_reference(rSP), FPURegs[reg]);
+    ng_binary_operation(ADD, 16, rSP);
 }
 
 void
@@ -317,7 +312,7 @@ gc_pushq(int reg) {
     if (reg >= DIVIDE_MASK) {
         gc_pushFPU(reg >> DIVIDE);
     } else {
-        sg("pushq\t%s", regs[reg], NULL);
+        sg_unary_operation(PUSH, regs[reg]);
     }
 }
 
@@ -326,7 +321,7 @@ gc_popq(int reg) {
     if (reg >= DIVIDE_MASK) {
         gc_popFPU(reg >> DIVIDE);
     } else {
-        sg("popq\t%s", regs[reg], NULL);
+        sg_unary_operation(POP, regs[reg]);
     }
     
 }
@@ -345,89 +340,34 @@ FLD source
 
 void
 gc_movzx(int reg) {
-    sg("movzx\t%s, %s", regs_byte[reg], regs[reg]);
+    sg_binary_operation(MOVZX, regs_byte[reg], regs[reg]);
 }
 
 void
-gc_sete(int reg) {
-    sg("sete\t%s", regs_byte[reg], NULL);
-}
-
-void
-gc_setnp(int reg) {
-    sg("setnp\t%s", regs_byte[reg], NULL);
-}
-
-void
-gc_setne(int reg) {
-    sg("setne\t%s", regs_byte[reg], NULL);
-}
-
-void
-gc_setp(int reg) {
-    sg("setp\t%s", regs_byte[reg], NULL);
-}
-
-void
-gc_setl(int reg) {
-    sg("setl\t%s", regs_byte[reg], NULL);
-}
-
-void
-gc_setb(int reg) {
-    sg("setb\t%s", regs_byte[reg], NULL);
-}
-
-void
-gc_setge(int reg) {
-    sg("setge\t%s", regs_byte[reg], NULL);
-}
-
-void
-gc_setae(int reg) {
-    sg("setae\t%s", regs_byte[reg], NULL);
-}
-
-void
-gc_setle(int reg) {
-    sg("setle\t%s", regs_byte[reg], NULL);
-}
-
-void
-gc_setbe(int reg) {
-    sg("setbe\t%s", regs_byte[reg], NULL);
-}
-
-void
-gc_setg(int reg) {
-    sg("setg\t%s", regs_byte[reg], NULL);
-}
-
-void
-gc_seta(int reg) {
-    sg("seta\t%s", regs_byte[reg], NULL);
+gc_setcc(char *op, int reg) {
+    sg_unary_operation(op, regs_byte[reg]);
 }
 
 void
 gc_setop(int cond, int reg) {
     switch(cond) {
         case 0:
-            gc_sete(reg);
+            gc_setcc(SETE, reg);
             break;
         case 1:
-            gc_setne(reg);
+            gc_setcc(SETNE, reg);
             break;
         case 2:
-            gc_setl(reg);
+            gc_setcc(SETL, reg);
             break;
         case 3:
-            gc_setge(reg);
+            gc_setcc(SETGE, reg);
             break;
         case 4:
-            gc_setle(reg);
+            gc_setcc(SETLE, reg);
             break;
         case 5:
-            gc_setg(reg);
+            gc_setcc(SETG, reg);
             break;
         default:
             mark("error cond", NULL);
@@ -439,24 +379,24 @@ void
 gc_setopss(int cond, int reg) {
     switch(cond) {
         case 0:
-            gc_sete(reg);
+            gc_setcc(SETE, reg);
             break;
         case 1:
-            gc_setne(reg);
-            gc_setp(reg + 1);
-            gc_xorb(reg + 1, reg);
+            gc_setcc(SETNE, reg);
+            gc_setcc(SETP, reg + 1);
+            gc_binary_reg2reg(XORB, reg + 1, reg, BoolType->size, BoolType->form);
             break;
         case 2:
-            gc_setb(reg);
+            gc_setcc(SETB, reg);
             break;
         case 3:
-            gc_setae(reg);
+            gc_setcc(SETAE, reg);
             break;
         case 4:
-            gc_setbe(reg);
+            gc_setcc(SETBE, reg);
             break;
         case 5:
-            gc_seta(reg);
+            gc_setcc(SETA, reg);
             break;
         default:
             mark("error cond", NULL);
@@ -464,94 +404,16 @@ gc_setopss(int cond, int reg) {
     gc_movzx(reg);
 }
 
-void
-gc_cmp(int reg2, int reg1) {
-    sg("cmpq\t%s, %s", regs[reg2], regs[reg1]);
-}
-
-void
-gc_cmp2(int reg) {
-    sg("cmpq\t$0, %s", regs[reg], NULL);
-}
-
-void
-gc_cmp3(int reg) {
-    sg("cmpq\t$0, (%s)", regs[reg], NULL);
-}
-
-
-void
-gc_ucomiss(int reg2, int reg1) {
-    sg("ucomiss\t%s, %s", FPURegs[reg2], FPURegs[reg1]);
-}
-
 // https://en.wikibooks.org/wiki/X86_Assembly/Control_Flow
 // https://stackoverflow.com/questions/28182827/useless-jp-jnp-assembly-instruction-on-x86-64
 // https://stackoverflow.com/questions/51940715/difference-between-jp-and-jpe-or-jnp-and-jpo-in-assembly-language
 
-void
-gc_je() {
-    graw("\tje");
-}
-
-void
-gc_jnp() {
-    graw("\tjnp");
-}
-
-void
-gc_jne() {
-    graw("\tjne");
-}
-
-void
-gc_jp() {
-    graw("\tjp");
-}
-
-void
-gc_jl() {
-    graw("\tjl");
-}
-
-void
-gc_jb() {
-    graw("\tjb");
-}
-
-void
-gc_jge() {
-    graw("\tjge");
-}
-
-void
-gc_jae() {
-    graw("\tjbe");
-}
-
-void
-gc_jle() {
-    graw("\tjle");
-}
-
-void
-gc_jbe() {
-    graw("\tjbe");
-}
-
-void
-gc_jg() {
-    graw("\tjg");
-}
-
-void
-gc_ja() {
-    graw("\tjb");
-}
 
 void
 gc_jmp(int lab) {
-    lg("%s\t%c%d", "jmp", lab);
+    char adr[16];
+    sprintf(adr, "%c%d", LPREFIX, lab);
+    sg_unary_operation(JMP, adr);
 }
 
 int
@@ -559,35 +421,34 @@ gc_jcmp(int cond, int lab) {
     if (lab == 0) {
         lab = label();
     }
+    char *op;
     switch(cond) {
         case 0:
-            gc_je();
+            op = JE;
             break;
         case 1:
-            gc_jne();
+            op = JNE;
             break;
         case 2:
-            gc_jl();
+            op = JL;
             break;
         case 3:
-            gc_jge();
+            op = JGE;
             break;
         case 4:
-            gc_jle();
+            op = JLE;
             break;
         case 5:
-            gc_jg();
+            op = JG;
             break;
         default:
             mark("error cond", NULL);
     }
-    lg("%s\t%c%d", "", lab);
-    return lab;
-}
 
-void
-gc_xorb(int reg2, int reg1) {
-    sg("xorb\t%s, %s", regs_byte[reg2], regs_byte[reg1]);
+    char adr[16];
+    sprintf(adr, "%c%d", LPREFIX, lab);
+    sg_unary_operation(op, adr);
+    return lab;
 }
 
 void
@@ -667,18 +528,18 @@ gc_mod(int reg2, int reg1) {
 }
 
 void 
-gcpublic(char *s) { 
-    sg("%s\t%s",GLOBL_LABEL, s); 
+gc_public(char *label) { 
+    sg_unary_operation(GLOBL_LABEL, label);
 }
 
 void
-gcentry() {
-    g("pushq\t%rbp");
-    g("movq\t%rsp,%rbp");
+gc_entry() {
+    sg_unary_operation(PUSH, rBP);
+    sg_binary_operation(MOV, rSP, rBP);
 }
 
 void
-gcexit(void) { 
-    g("popq\t%rbp");
-    g("ret"); 
+gc_exit(void) {
+    sg_unary_operation(POP, rBP);
+    sg_operator(RET);
 }

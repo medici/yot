@@ -1,30 +1,41 @@
-
-
-	.text
-	.data
-Yrrr:	.long	1078774989
-Yr:	.long	0
 	.text
 	.globl	Ymain
 Ymain:	pushq	%rbp
 	movq	%rsp,%rbp
-	addq	$-16, %rsp
-	leaq	YReal(%rip), %rdi
-	movss	4(%rdi), %xmm0
-	movss	%xmm0, -16(%rbp)
-
-	movss $0, %xmm0
-	flds	-16(%rbp)
-	fsub   %xmm0
-	fsts	-16(%rbp)
-	movss	-16(%rbp), %xmm0
-
-	call	YWriteReal
+	addq	$-528, %rsp
+	movq	$0, -520(%rbp)
+	leaq	-256(%rbp), %rdi
+	leaq	Y__Str__(%rip), %rsi
+	leaq	5(%rsi), %rsi
+	cld
+	rep	movsb
+	leaq	-256(%rbp), %rdi
+	movq	$256, %rsi
+	call	YWriteString
 	call	YWriteLn
-	addq	$16, %rsp
+	leaq	Y__Str__(%rip), %rdi
+	leaq	0(%rdi), %rdi
+	movq	$0, %rsi
+	call	YWriteString
+	call	YWriteLn
+	addq	$528, %rsp
 	popq	%rbp
 	ret
 	.data
-YReal:
-	.long	1095132774
-	.long	1049310003
+Y__Str__:
+	.byte	97
+	.byte	98
+	.byte	99
+	.byte	57
+	.byte	0
+	.byte	115
+	.byte	116
+	.byte	114
+	.byte	0
+	.byte	0
+	.byte	0
+	.byte	0
+	.byte	0
+	.byte	0
+	.byte	0
+	.byte	0

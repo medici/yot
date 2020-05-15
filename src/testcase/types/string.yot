@@ -1,6 +1,8 @@
 module string
 import Text;
 
+const str2 = "abc93";
+
 func main()
 	|
 		const str = "abc9";
@@ -15,6 +17,10 @@ func main()
 	Text.WriteLn;
 
 	Text.WriteString(str);
+	
+	Text.WriteLn;
+
+	Text.WriteString(str2);
 	
 	Text.WriteLn
 end;

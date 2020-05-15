@@ -1,13 +1,28 @@
 module arr
 	import Text;
+	
 	func main()
 		|
 			var int : array 2, 10 of integer;
-				i : integer;
+				i, j  : integer;
 		|
+
+		i := 0;
+		j := 0;
+
+		repeat 
+			repeat
+				int[j, i] := 0;
+				i := i + 1;
+			until i = 10;
+			j := j + 1;
+			i := 0;
+		until j = 2;
+
 		i := 0;
 		int[0, i] := 99;
-		Text.WriteInt(int[0, i]);
+
+		Text.WriteInt(int[0, i + 1]);
 		Text.WriteLn
 	end;
 end.

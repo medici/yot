@@ -2,7 +2,7 @@ CC = gcc
 AS=	as
 AR=	ar -rc
 RANLIB=	ranlib
-SRC = printt.c misc.c error.c scan.c base.c generator.c generate_code.c parser.c main.c
+SRC = printt.c misc.c error.c scan.c base.c table.c generator.c generate_code.c parser.c main.c
 
 all: yot base lib libyot.a
 	

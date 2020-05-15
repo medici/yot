@@ -8,6 +8,9 @@
 #define DATA_LABEL  ".data"
 #define TEXT_LABEL  ".text"
 #define GLOBL_LABEL ".globl"
+#define BYTE_LABEL  ".byte"
+#define LONG_LABEL  ".long"
+#define QUAD_LABEL  ".quad"
 
 int PC;
 
@@ -29,8 +32,10 @@ struct Item {
 void sg_operator(char *operator);
 void sg_unary_operation(char *op, char *opand);
 void sg_binary_operation(char *op, char *opand1, char *opand2);
+void ng_unary_operation(char *op, int source);
 void ng_binary_operation(char *op, int source, char *destination);
 void ng_ternary_operation(char *op, int value, char *source, char *destination);
+void define_data(char *type, int value);
 
 void save_product_registers(int reg2, int reg1);
 void restore_product_registers(int reg2, int reg1);
@@ -54,12 +59,6 @@ void glab(int id);
 
 void galign(int k); 
 void gcstorlw(int n);
-void lg(char *s, char *inst, int n);
-void lg2(char *s, int n, char *inst);
-void graw(char *s);
-void g();
-void sg(char *s, char *inst, char *s2);
-void sg2(char *s, char *inst, char *s2, char *s3);
 void gprelude();
 void gpostlude();
 int real_index(long int value);

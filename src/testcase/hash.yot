@@ -1,0 +1,17 @@
+module hash
+	import Text;
+
+	const i = 10;
+
+	func main()
+		|
+			var i : integer;
+		|
+
+		i := 22;
+
+		Text.WriteInt(i);
+		Text.WriteLn
+	end;
+
+end.

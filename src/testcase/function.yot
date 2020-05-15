@@ -38,15 +38,7 @@ module function
 		c := "c";
 		r := 12.2;
 		r := add(i, b, c, r, str);
-		Text.WriteInt(i);
-		Text.WriteLn;
-		Text.WriteBool(b);
-		Text.WriteLn;
-		Write(c);
-		Text.WriteLn();
-		Text.WriteReal(r);
-		Text.WriteLn;
-		
+
 	end;
 
 end.

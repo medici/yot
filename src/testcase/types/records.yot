@@ -8,7 +8,7 @@ type
 		hh: real;
 	end;
 
-var s : person;
+var s, p: person;
 
 func name(p : person)
 	Text.WriteString(s.name);
@@ -24,6 +24,7 @@ func main()
 	s.hh := 1.1;
 	Text.WriteReal(s.hh);
 	Text.WriteLn;
+	p.name := "name";
 	s.name := "str";
 	name(s);
 	Text.WriteString(s.name);

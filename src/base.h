@@ -4,36 +4,11 @@
 #include "data.h"
 #include "scan.h"
 #include "define.h"
-
-typedef struct Object *Object;
-typedef struct Type *Type;
-
-struct Object {
-  char name[TEXTLEN + 1];
-  int class, exno;
-  int level;
-  bool expo, rdo; /*exported / read-only*/
-  Type type;
-  Object next;
-  Object dsc;
-  long int value;
-};
-
-struct Type {
-  int form;
-  int ref; /*ref is only used for import/export*/
-  int mno;
-  int nofpar; /*for procedures, extension level for records*/
-  int len; /*for arrays, len < 0 => open array; for records: adr of descriptor*/
-  int size; /*in bytes; always multiple of 4, except for Byte, Bool and Char*/
-  Object dsc;
-  Object typobj;
-  Type base;/*for arrays, records, pointers*/
-};
+#include "table.h"
 
 
 Type IntType, BoolType, RealType, CharType, StringType, NoType, NilType;
-Object Universe, TopScope, System;
+Table Universe, TopScope, System;
 
 
 /* class / mode*/ 
@@ -45,7 +20,6 @@ enum {
     CPAR,
     CCOND,
     CCONST,
-    CSTRING,
     CFLD,
     CTYPE,
     CSFUNC,

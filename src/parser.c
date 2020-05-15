@@ -37,6 +37,7 @@ check(int sym, char *msg) {
 Object
 qualident() {
     Object obj = this_obj();
+
     get();
 
     if (obj == NULL) {
@@ -551,7 +552,7 @@ param_list(Item x) {
     //     par = checked_malloc(sizeof(*par));
     //     x->type->dsc = par;
     // } else {
-        par = x->type->dsc;
+        par = x->type->dscobj;
     //}
     
     if (Symbol != RPAREN) {
@@ -947,6 +948,7 @@ record_type(Type typ) {
     typ->form = FNOTYPE;
     typ->base = NULL;
     typ->nofpar = 0;
+    typ->dsc = hash_init();
     bot = NULL;
 
     while (Symbol == IDENT) {
@@ -990,6 +992,7 @@ record_type(Type typ) {
             obj0->level = 0;
             off = off - tp->size;
             obj0->value = off;
+            hash_insert(typ->dsc, obj0);
             obj0 = obj0->next;
         }
         bot = obj;
@@ -1000,12 +1003,12 @@ record_type(Type typ) {
         }
     }
     typ->form = FRECORD;
-    typ->dsc = bot;
+    typ->dscobj = bot;
     typ->size = (offset + (WORDSIZE - 1)) / WORDSIZE * WORDSIZE;
 }
 
 void
-fp_section(int *adr, int *nofpar) {
+fp_section(int *adr, int *nofpar, Table table) {
     Object obj, first;
     Type tp = IntType;
     int parsize;
@@ -1021,6 +1024,7 @@ fp_section(int *adr, int *nofpar) {
     first = ident_list(class);
 
     tp = formal_type(Text);
+
     rdo = FALSE;
     
     if (class == CVAR && tp->form >= FARRAY) {
@@ -1037,6 +1041,7 @@ fp_section(int *adr, int *nofpar) {
     }
     
     obj = first;
+
     
     while(obj != NULL) {
         ++(*nofpar);
@@ -1046,30 +1051,32 @@ fp_section(int *adr, int *nofpar) {
         obj->level = CurrentLevel;
         *adr += parsize;
         obj->value = -*adr;
+        hash_insert(table, obj);
         obj = obj->next;
+        
     }
 }
 
 void
 func_type(Type ptype, int *parblksize) {
-    Object obj;
+    Object obj, first = NULL;
     int size;
     int nofpar;
 
     ptype->base = NoType;
     size = *parblksize;
     nofpar = 0;
-    ptype->dsc = NULL;
+    ptype->dsc = hash_init();
 
     if (Symbol == LPAREN) {
         get();
         if (Symbol == RPAREN) {
             get();
         } else {
-            fp_section(&size, &nofpar);
+            fp_section(&size, &nofpar, ptype->dsc);
             while(Symbol == SEMICOLON) {
                 get();
-                fp_section(&size, &nofpar);
+                fp_section(&size, &nofpar, ptype->dsc);
             }
             check(RPAREN, "%s )?");
         }
@@ -1102,6 +1109,7 @@ type() {
 
     if (Symbol == IDENT) {
         obj = qualident();
+
         if (obj->class == CTYPE) {
             tp = obj->type;
             if (obj->type != NULL && obj->type->form != FNOTYPE) {
@@ -1151,12 +1159,13 @@ declarations(int locblksize) {
             }
             x = expression();
             if (x->mode == CCONST) {
-                obj->level = CurrentLevel;
+                obj->level = x->b;
                 obj->value = x->a;
                 if (x->type->form == FSTRING && x->b == 2) {
                     str_to_char(x);
                     obj->value = x->a;
                 } else if (x->type == RealType) {
+                    obj->level = CurrentLevel;
                     obj->value = real_index(obj->value);
                 }
                 obj->type = x->type;
@@ -1192,8 +1201,10 @@ declarations(int locblksize) {
         get();
         while(Symbol == IDENT) {
             first = ident_list(CVAR);
+
             tp = type();
             obj = first;
+
             while(obj != NULL) {
                 obj->type = tp;
                 obj->level = CurrentLevel;
@@ -1235,6 +1246,7 @@ module_declarations() {
         gdata();
         while(Symbol == IDENT) {
             obj = new_obj(CCONST);
+
             get();
             obj->expo = check_export();
             obj->rdo = TRUE;
@@ -1275,6 +1287,7 @@ module_declarations() {
             check(SEMICOLON, "; missing");
         }
     }
+
     if (Symbol == TYPE) {
         get();
         while(Symbol == IDENT) {
@@ -1386,13 +1399,15 @@ func_decl() {
     }
 
     locblksize = parblksize;
-    proc->type->dsc = TopScope->next;
+    proc->type->dscobj = TopScope->first;
     if (Symbol == SEPARATOR) {
 
         locblksize = declarations(locblksize);
+
         proc->value = PC;
-        proc->type->dsc = TopScope->next;
+        proc->type->dscobj = TopScope->first;
         while(Symbol == FUNC) {
+
             func_decl();
             if (Symbol == SEMICOLON) {
                 get();
@@ -1401,8 +1416,8 @@ func_decl() {
             }
         }
 
-        proc->type->dsc = TopScope->next;
-        tp->dsc = TopScope->next;
+        proc->type->dscobj = TopScope->first;
+        tp->dscobj = TopScope->first;
 
         if (Symbol == SEPARATOR) {
             get();
@@ -1456,11 +1471,13 @@ void
 module() {
     char modid[TEXTLEN];
     char impid[TEXTLEN];
+    Object objdsc = NULL;
     open();
     get();
     if (Symbol == MODULE) {
         get();
         base_start();
+
         open_scope();
         copy_ident(modid, CurrentDirectory);
         strcat(modid, Text);
@@ -1509,6 +1526,7 @@ module() {
 
             check(SEMICOLON, "no ;");
         }
+
         module_declarations();
 
         while(Symbol == FUNC) {
