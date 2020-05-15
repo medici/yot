@@ -12,7 +12,7 @@
     <link href="css/bootstrap-responsive.min.css" rel="stylesheet">
     <link href="css/colors.css" rel="stylesheet">
 
-          <style type="text/css">
+    <style type="text/css">
     a.sourceLine { display: inline-block; line-height: 1.25; }
     a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
     a.sourceLine:empty { height: 1.2em; }
@@ -48,7 +48,7 @@
     code span.al { color: #ff0000; font-weight: bold; } /* Alert */
     code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
     code span.at { color: #7d9029; } /* Attribute */
-    code span.bn { color: #40a070; } /* BaseN */
+    code span.bn { color: #43956c; } /* BaseN */
     code span.bu { } /* BuiltIn */
     code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
     code span.ch { color: #4070a0; } /* Char */
@@ -56,15 +56,15 @@
     code span.co { color: #60a0b0; font-style: italic; } /* Comment */
     code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
     code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-    code span.dt { color: #902000; } /* DataType */
-    code span.dv { color: #40a070; } /* DecVal */
+    code span.dt { color: #8f3a21; } /* DataType */
+    code span.dv { color: #4a8b6b; } /* DecVal */
     code span.er { color: #ff0000; font-weight: bold; } /* Error */
     code span.ex { } /* Extension */
     code span.fl { color: #40a070; } /* Float */
-    code span.fu { color: #06287e; } /* Function */
+    code span.fu { color: #213d83; } /* Function */
     code span.im { } /* Import */
     code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.kw { color: #256638; font-weight: bold; } /* Keyword */
     code span.op { color: #666666; } /* Operator */
     code span.ot { color: #007020; } /* Other */
     code span.pp { color: #bc7a00; } /* Preprocessor */
@@ -75,20 +75,23 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
       </style>
-            <link rel="stylesheet" href="css/style.css" />
+        <link rel="stylesheet" href="css/style.css" />
               </head>
 
   <body>
+    <header class="page-nav">
+      <ul class="nav">
+        <li><a href="index.html">主页</a></li>
+        <li><a href="https://github.com/medici/yot">Github</a></li>
+      </ul>
+    </header>
 
     <div id="content">
 
         <div class="row">
 
           <div class="span3 side toc">
-              <ul>
-              <li><a href="index.html">主页</a></li>
-              <li><a href="https://github.com/medici/yot">Github</a></li>
-              </ul>
+              
               <ul>
               <li><a href="#安装">安装</a><ul>
               <li><a href="#mac64bit-linux64bit">Mac(64bit) &amp; Linux(64bit)</a></li>
@@ -123,45 +126,44 @@
 <p>正在开发中。</p>
 <h2 id="编译成汇编">编译成汇编</h2>
 <div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb4-1" title="1"><span class="op">&gt;&gt;&gt;</span> <span class="ex">./yot</span> -S hello_world.yot</a>
-<a class="sourceLine" id="cb4-2" title="2"><span class="op">&gt;&gt;&gt;</span> <span class="fu">cat</span> hello_world.s</a>
-<a class="sourceLine" id="cb4-3" title="3"></a>
-<a class="sourceLine" id="cb4-4" title="4">    <span class="ex">.text</span></a>
-<a class="sourceLine" id="cb4-5" title="5">    <span class="ex">.data</span></a>
-<a class="sourceLine" id="cb4-6" title="6"><span class="ex">L1</span>:</a>
-<a class="sourceLine" id="cb4-7" title="7">    <span class="ex">.byte</span>   104</a>
-<a class="sourceLine" id="cb4-8" title="8">    <span class="ex">.byte</span>   101</a>
-<a class="sourceLine" id="cb4-9" title="9">    <span class="ex">.byte</span>   108</a>
-<a class="sourceLine" id="cb4-10" title="10">    <span class="ex">.byte</span>   108</a>
-<a class="sourceLine" id="cb4-11" title="11">    <span class="ex">.byte</span>   111</a>
-<a class="sourceLine" id="cb4-12" title="12">    <span class="ex">.byte</span>   32</a>
-<a class="sourceLine" id="cb4-13" title="13">    <span class="ex">.byte</span>   119</a>
-<a class="sourceLine" id="cb4-14" title="14">    <span class="ex">.byte</span>   111</a>
-<a class="sourceLine" id="cb4-15" title="15">    <span class="ex">.byte</span>   114</a>
-<a class="sourceLine" id="cb4-16" title="16">    <span class="ex">.byte</span>   108</a>
-<a class="sourceLine" id="cb4-17" title="17">    <span class="ex">.byte</span>   100</a>
-<a class="sourceLine" id="cb4-18" title="18">    <span class="ex">.byte</span>   0</a>
-<a class="sourceLine" id="cb4-19" title="19">    <span class="ex">.byte</span>   0</a>
-<a class="sourceLine" id="cb4-20" title="20">    <span class="ex">.byte</span>   0</a>
-<a class="sourceLine" id="cb4-21" title="21">    <span class="ex">.byte</span>   0</a>
-<a class="sourceLine" id="cb4-22" title="22">    <span class="ex">.byte</span>   0</a>
-<a class="sourceLine" id="cb4-23" title="23">    <span class="ex">.byte</span>   0</a>
-<a class="sourceLine" id="cb4-24" title="24">    <span class="ex">.text</span></a>
-<a class="sourceLine" id="cb4-25" title="25">    <span class="ex">.globl</span>  Ymain</a>
-<a class="sourceLine" id="cb4-26" title="26"><span class="ex">Ymain</span>:  pushq   %rbp</a>
-<a class="sourceLine" id="cb4-27" title="27">    <span class="ex">movq</span>    %rsp,%rbp</a>
-<a class="sourceLine" id="cb4-28" title="28">    <span class="ex">leaq</span>    L1(%rip), <span class="ex">%rdi</span></a>
-<a class="sourceLine" id="cb4-29" title="29">    <span class="ex">movq</span>    <span class="va">$0</span>, %rsi</a>
-<a class="sourceLine" id="cb4-30" title="30">    <span class="ex">call</span>    YWriteString</a>
-<a class="sourceLine" id="cb4-31" title="31">    <span class="ex">call</span>    YWriteLn</a>
-<a class="sourceLine" id="cb4-32" title="32">    <span class="ex">popq</span>    %rbp</a>
-<a class="sourceLine" id="cb4-33" title="33">    <span class="ex">ret</span></a></code></pre></div>
+<a class="sourceLine" id="cb4-2" title="2"><span class="op">&gt;&gt;&gt;</span> <span class="fu">cat</span> hello_world.s</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode asm"><code class="sourceCode fasm"><a class="sourceLine" id="cb5-1" title="1">    .text</a>
+<a class="sourceLine" id="cb5-2" title="2">    .<span class="bu">data</span></a>
+<a class="sourceLine" id="cb5-3" title="3"><span class="fu">L1:</span></a>
+<a class="sourceLine" id="cb5-4" title="4">    .<span class="dt">byte</span>   <span class="dv">104</span></a>
+<a class="sourceLine" id="cb5-5" title="5">    .<span class="dt">byte</span>   <span class="dv">101</span></a>
+<a class="sourceLine" id="cb5-6" title="6">    .<span class="dt">byte</span>   <span class="dv">108</span></a>
+<a class="sourceLine" id="cb5-7" title="7">    .<span class="dt">byte</span>   <span class="dv">108</span></a>
+<a class="sourceLine" id="cb5-8" title="8">    .<span class="dt">byte</span>   <span class="dv">111</span></a>
+<a class="sourceLine" id="cb5-9" title="9">    .<span class="dt">byte</span>   <span class="dv">32</span></a>
+<a class="sourceLine" id="cb5-10" title="10">    .<span class="dt">byte</span>   <span class="dv">119</span></a>
+<a class="sourceLine" id="cb5-11" title="11">    .<span class="dt">byte</span>   <span class="dv">111</span></a>
+<a class="sourceLine" id="cb5-12" title="12">    .<span class="dt">byte</span>   <span class="dv">114</span></a>
+<a class="sourceLine" id="cb5-13" title="13">    .<span class="dt">byte</span>   <span class="dv">108</span></a>
+<a class="sourceLine" id="cb5-14" title="14">    .<span class="dt">byte</span>   <span class="dv">100</span></a>
+<a class="sourceLine" id="cb5-15" title="15">    .<span class="dt">byte</span>   <span class="dv">0</span></a>
+<a class="sourceLine" id="cb5-16" title="16">    .<span class="dt">byte</span>   <span class="dv">0</span></a>
+<a class="sourceLine" id="cb5-17" title="17">    .<span class="dt">byte</span>   <span class="dv">0</span></a>
+<a class="sourceLine" id="cb5-18" title="18">    .<span class="dt">byte</span>   <span class="dv">0</span></a>
+<a class="sourceLine" id="cb5-19" title="19">    .<span class="dt">byte</span>   <span class="dv">0</span></a>
+<a class="sourceLine" id="cb5-20" title="20">    .<span class="dt">byte</span>   <span class="dv">0</span></a>
+<a class="sourceLine" id="cb5-21" title="21">    .text</a>
+<a class="sourceLine" id="cb5-22" title="22">    .globl  Ymain</a>
+<a class="sourceLine" id="cb5-23" title="23"><span class="fu">Ymain:</span>  pushq   %<span class="kw">rbp</span></a>
+<a class="sourceLine" id="cb5-24" title="24">    <span class="bu">movq</span>    %<span class="kw">rsp</span>,%<span class="kw">rbp</span></a>
+<a class="sourceLine" id="cb5-25" title="25">    leaq    L1(%rip), %<span class="kw">rdi</span></a>
+<a class="sourceLine" id="cb5-26" title="26">    <span class="bu">movq</span><span class="bn">    $0, </span>%<span class="kw">rsi</span></a>
+<a class="sourceLine" id="cb5-27" title="27">    <span class="bu">call</span>    YWriteString</a>
+<a class="sourceLine" id="cb5-28" title="28">    <span class="bu">call</span>    YWriteLn</a>
+<a class="sourceLine" id="cb5-29" title="29">    popq    %<span class="kw">rbp</span></a>
+<a class="sourceLine" id="cb5-30" title="30">    <span class="bu">ret</span></a></code></pre></div>
           </div>
         </div>
 
     </div>
 
-    <footer style="text-align: center; padding: 30px; margin-top: 100px;">
-        <a href="http://www.beian.miit.gov.cn">粤ICP备19160128号</a>
+    <footer class="page-footer">
+        <a href="http://www.beian.miit.gov.cn" style="color: rgba(255, 255, 255, 0.2);">粤ICP备19160128号</a>
     </footer>
     <script src="https://code.jquery.com/jquery.js"></script>
     <script src="js/nav.js"></script>

@@ -7,14 +7,16 @@ html {
 
 body {
   font-size: 14px;
-  font-family: HelveticaNeue, 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  color: #332;
+  font-family: Helvetica Neue,Helvetica,Arial,Microsoft Yahei,Hiragino Sans GB,Heiti SC,WenQuanYi Micro Hei,sans-serif;
+  color: #325050;
   height: 100%;
+  padding: 0;
+  margin: 0;
+  padding-top: 60px;
 }
 
 h1, h2, h3, h4, h5 {
-  color: #332;
-  font-family: "Signika";
+  color: #2e484c;
   font-weight: 400;
   line-height: 1.1;
 }
@@ -81,10 +83,68 @@ hr {
   margin-bottom: 100px;
 }
 
+.text-center {
+  text-align: center;
+}
+.page-nav {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  left: 0;
+  z-index: 2;
+  background-image: url(../img/contours@2x.png), url(../img/noise.png), url(../img/gridlines.png), url(../img/huntington.jpg);
+  -webkit-background-size: 50% auto, auto, auto, cover;
+     -moz-background-size: 50% auto, auto, auto, cover;
+       -o-background-size: 50% auto, auto, auto, cover;
+          background-size: 50% auto, auto, auto, cover;
+}
+.page-nav .nav {
+  height: 60px;
+  list-style: none;
+  margin: 0;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: start;
+  -webkit-justify-content: flex-start;
+     -moz-box-pack: start;
+      -ms-flex-pack: start;
+          justify-content: flex-start;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+     -moz-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.page-nav .nav a {
+  color: white;
+  font-size: 16px;
+  padding: 0 15px;
+}
+
 /* Logo */
 
 .logo {
   text-align: center;
+  font-size: 250px;
+  font-weight: bold;
+  background: url(../img/huntington.jpg) no-repeat;
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  margin-top: 25px;
+  margin-bottom: 0px;
+}
+.logo-dsc {
+  margin-top: 0;
+  font-size: 20px;
+  margin-bottom: 25px;
+  font-weight: bold;
+  background: url(../img/huntington.jpg) no-repeat;
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
 }
 
 .tagline {
@@ -109,8 +169,12 @@ hr {
 /* TOC Links */
 
 a { 
-  color: #111111;
+  color: #0d8ba1;
   text-decoration: none;
+}
+
+a:visited {
+  color: #1a5952;
 }
 
 .body li a {
@@ -155,12 +219,8 @@ li code, p code {
 
 pre {
   font-size: 0.9em;
-
   margin-bottom: 18px;
   margin-top: 18px;
-
-  border-left: 1px solid #ccc;
-
 }
 
 h1 {
@@ -228,11 +288,12 @@ ul.sections {
 
 code.sourceCode {
     padding: 0;
-    background: inherit;
 }
 
 pre.sourceCode {
-    padding: 10px;
+  color: rgb(97, 104, 87);
+    padding: 20px;
+    background-color: rgb(230 237 232);
 }
 
 ul.sections > li > div {
@@ -243,6 +304,48 @@ ul.sections > li > div {
     box-sizing: border-box;         /* css3 */
 }
 
+.page-footer {
+   text-align: center; 
+   padding: 15px; 
+   margin-top: 100px; 
+   background: #134347; 
+   position: relative;
+   z-index: 1;
+   font-size: 12px;
+}
+
+.body {
+  padding: 25px;
+  float: none;
+  clear: both;
+}
+body p {
+  font-size: 16px;
+}
+
+  .toc li {
+      line-height: 20px !important;
+      list-style-type: none;
+  }
+.side {
+    padding-top: 25px;
+  background-color: #e6ede8;
+
+  padding-bottom: 25px;
+}
+
+  .side > ul > li > a {
+    font-size: 19px;
+    color: rgb(96, 116, 118);
+    margin-bottom: 15px;
+    display: block;
+  }
+
+
+  .side a {
+    font-size: 14px;
+    color: rgb(97, 104, 87);
+  }
 
 /* Make the naviation centered and larger on small screens */
 /*----------------------  (> 481px) ---------------------*/
@@ -268,10 +371,6 @@ ul.sections > li > div {
 }
 
 @media only screen and (min-width: 1025px) {
-  body {
-      padding: 10px;
-  }
-
   .toc ul ul {
       padding-left: 0.8em;
   }
@@ -279,11 +378,6 @@ ul.sections > li > div {
   .toc > ul {
       margin-top: 0px;
       font-size: 12px;
-  }
-
-  .toc li {
-      line-height: 15px !important;
-      list-style-type: none;
   }
 
 
@@ -299,7 +393,6 @@ ul.sections > li > div {
     text-decoration: none;
     font-size: 8pt;
     line-height: 0.9;
-    opacity: 0.5;
     height: 100%;
 
     -o-transition: opacity .25s ease-in-out;
@@ -315,17 +408,23 @@ ul.sections > li > div {
 
 
   .side {
+      padding-top: 90px;
       position: fixed;
       width: 270px !important;
       margin-left: 0px;
-      z-index: 1000;
-  }
-
-  .side ul ul {
-    display: none;
+      z-index: 0;
+      top: 0;
+      left: 0;
+      padding-bottom: 0;
   }
 
   .side ul ul.active {
+    display: block;
+  }
+  .side > ul > li > a {
+    font-size: 19px;
+    color: rgb(96, 116, 118);
+    margin-bottom: 15px;
     display: block;
   }
 
@@ -333,8 +432,14 @@ ul.sections > li > div {
       font-weight: bold;
   }
 
+  .side a {
+    font-size: 14px;
+    color: rgb(97, 104, 87);
+  }
+
   .body {
       margin-left: 270px !important;
+      padding-top: 25px;
   }
 
 }
@@ -345,4 +450,24 @@ ul.sections > li > div {
   max-width: 1440px;
   margin: auto;
   min-height: 100%;
+  overflow: hidden;
+}
+
+@media (max-width: 979px) and (min-width: 768px) {
+  .span3 {
+    width: 100%;
+  }
+  .span9 {
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
+    width: 100%;
+  }
+}
+
+@media (min-width: 1200px) {
+.row {
+    margin-left: 0px;
+    *zoom: 1;
+}
 }

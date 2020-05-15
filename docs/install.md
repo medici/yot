@@ -45,7 +45,8 @@ Windows
 ```bash
 >>> ./yot -S hello_world.yot
 >>> cat hello_world.s
-
+```
+```asm
 	.text
 	.data
 L1:

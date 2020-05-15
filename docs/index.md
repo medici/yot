@@ -1,6 +1,10 @@
-<p class="logo">
-![](img/logo.png)
+<h1 class="logo">
+	Yot
+</h1>
+<p class="logo-dsc text-center">
+	开源编程语言。简洁、高效。
 </p>
+
 
 
 * [Chapter 1: 安装](install.html)
