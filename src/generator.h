@@ -3,30 +3,30 @@
 
 #include "data.h"
 
-#define REAL_LABEL  "__Real__"
-#define STR_LABEL   "__Str__"
-#define DATA_LABEL  ".data"
-#define TEXT_LABEL  ".text"
+#define REAL_LABEL "__Real__"
+#define STR_LABEL "__Str__"
+#define DATA_LABEL ".data"
+#define TEXT_LABEL ".text"
 #define GLOBL_LABEL ".globl"
-#define BYTE_LABEL  ".byte"
-#define LONG_LABEL  ".long"
-#define QUAD_LABEL  ".quad"
+#define BYTE_LABEL ".byte"
+#define LONG_LABEL ".long"
+#define QUAD_LABEL ".quad"
 
 int PC;
 
 typedef struct Item *Item;
 
 struct Item {
-    int mode;
-    int level;
-    Type type;
-    long int a;
-    int b;
-    int c;
-    int r;
-    bool rdo;
-    char name[TEXTLEN + 1];
-    long double f;
+  int mode;
+  int level;
+  Type type;
+  long int a;
+  int b;
+  int c;
+  int r;
+  bool rdo;
+  char name[TEXTLEN + 1];
+  long double f;
 };
 
 void sg_operator(char *operator);
@@ -53,11 +53,11 @@ int rh();
 int rhf();
 void check_regs();
 void g_name(char *name);
-char* g_symbol(char *s);
+char *g_symbol(char *s);
 void gpublic(char *procid);
 void glab(int id);
 
-void galign(int k); 
+void galign(int k);
 void gcstorlw(int n);
 void gprelude();
 void gpostlude();
@@ -82,16 +82,17 @@ Item make_const_item(int value, Type tp);
 Item make_real_item(float value);
 Item make_strlit_item(char *value);
 void neg(Item x);
-int* pre_call(Item x);
+int *pre_call(Item x);
 void int_relation(int op, Item x, Item y);
 void real_relation(int op, Item x, Item y);
-void Fixup(int lab);
-void FJump();
+void fixLink(long int L);
+void Fixup(long int lab);
+long int FJump(long int lab);
 void CFJump(Item x);
-void CBJump(Item x, int lab);
-void Fixup(int lab);
+void BJump(long int lab);
+void CBJump(Item x, long int lab);
 void For0(Item x, Item y);
-void For1(Item x, Item y, Item z, Item w, int lab);
+long int For1(Item x, Item y, Item z, Item w, long int lab);
 void For2(Item x, Item y, Item w);
 void add_op(int op, Item x, Item y);
 void mul_op(Item x, Item y);
@@ -115,6 +116,7 @@ void or1(Item x);
 void or2(Item x, Item y);
 void and1(Item x);
 void and2(Item x, Item y);
+void generator·dereference(Item x);
 
 void Abs(Item x);
 void Floor(Item x);
@@ -122,6 +124,10 @@ void Ord(Item x);
 void Shift(int fct, Item x, Item y);
 void Write(int r[2]);
 void Return(int form, Item x, bool interrupt);
-
+void generator·Brk(Item x);
+void generator·Free(Item x, Item y);
+void generator·Adr(Item x);
+void generator·Get(Item x, Item y);
+void generator·Put(Item x, Item y);
 
 #endif

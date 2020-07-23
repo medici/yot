@@ -1,7 +1,10 @@
-#include <stdlib.h>
-#include <libgen.h>
 #include "base.h"
+
+#include <libgen.h>
+#include <stdlib.h>
+
 #include "declare.h"
+#include "sys.h"
 #include "table.h"
 
 #define MaxTypTab 64
@@ -10,15 +13,13 @@ Type TypTab[MaxTypTab];
 
 void out_type(FILE *ptr, Type tp);
 
-Object
-new_obj(int class) {
+Object new_obj(int class) {
   Object new, x;
 
   // new = checked_malloc(sizeof(*new));
   // x = TopScope;
 
   x = hash_search(TopScope, Text);
-
 
   if (x == NULL) {
     new = checked_malloc(sizeof(*new));
@@ -46,7 +47,7 @@ new_obj(int class) {
   // while(x->next != NULL && strneq(x->next->name, Text)) {
   //    x = x->next;
   // }
-  
+
   // if (x->next == NULL) {
   //   new = checked_malloc(sizeof(*new));
   //   copy_ident(new->name, Text);
@@ -62,13 +63,12 @@ new_obj(int class) {
   // }
 }
 
-Object
-this_obj() {
+Object this_obj() {
   Object x;
   Table s;
-  
+
   s = TopScope;
-  while(1) {
+  while (1) {
     // x = s->next;
     // while(x != NULL && strneq(x->name, Text) && x != NULL) {
     //     x = x->next;
@@ -79,21 +79,18 @@ this_obj() {
     x = hash_search(s, Text);
 
     if (x) {
-
       return x;
     }
 
     if (s == Universe) {
-
-        mark("undef: %s", Text);
-        return x;
+      // mark("undef: %s", Text);
+      return x;
     }
     s = s->dsc;
   }
 }
 
-Object
-this_import(Object mod) {
+Object this_import(Object mod) {
   Table table;
   Object obj;
   if (mod->rdo) {
@@ -112,8 +109,7 @@ this_import(Object mod) {
   return obj;
 }
 
-Object 
-this_field(Type rec) {
+Object this_field(Type rec) {
   Table table = rec->dsc;
   Object fld;
   // while (fld != NULL && strneq(fld->name, Text)) {
@@ -123,8 +119,7 @@ this_field(Type rec) {
   return fld;
 }
 
-void
-open_scope() {
+void open_scope() {
   // Object s = checked_malloc(sizeof(*s));
   // s->class = CHEAD;
   // s->dsc = TopScope;
@@ -134,13 +129,9 @@ open_scope() {
   TopScope = s;
 }
 
-void
-close_scope() {
-  TopScope = TopScope->dsc;
-}
+void close_scope() { TopScope = TopScope->dsc; }
 
-Object
-this_module(char *name) {
+Object this_module(char *name) {
   Object mod, obj;
   Table table = TopScope;
 
@@ -168,19 +159,17 @@ this_module(char *name) {
   return obj;
 }
 
-Type
-type2(int ref, int form, int size) {
-	Type tp = checked_malloc(sizeof(*tp));
-	tp->form = form;
-	tp->size = size;
-	tp->ref = ref;
-	tp->base = NULL;
+Type type2(int ref, int form, int size) {
+  Type tp = checked_malloc(sizeof(*tp));
+  tp->form = form;
+  tp->size = size;
+  tp->ref = ref;
+  tp->base = NULL;
 
-	return tp;
+  return tp;
 }
 
-void
-in_type(FILE *ptr, Object thismod, Type tp) {
+void in_type(FILE *ptr, Object thismod, Type tp) {
   int class, form, nofpar, size;
   Object obj, parameter;
   fread(&form, sizeof(form), 1, ptr);
@@ -219,8 +208,7 @@ in_type(FILE *ptr, Object thismod, Type tp) {
   }
 }
 
-void
-import(char *impid) {
+void import(char *impid) {
   Object thismod;
   FILE *ptr;
   int class;
@@ -235,21 +223,21 @@ import(char *impid) {
   ptr = fopen(filename, "rb");
   thismod = this_module(basename(impid));
   thismod->rdo = TRUE;
-  
+
   Object obj = checked_malloc(sizeof(*obj));
   fread(&class, sizeof(class), 1, ptr);
   Table table = hash_init();
 
   thismod->dsc = table;
 
-  while(class != 0) {
+  while (class != 0) {
     obj = checked_malloc(sizeof(*obj));
     obj->class = class;
     fread(obj->name, sizeof(obj->name), 1, ptr);
     Type type = checked_malloc(sizeof(*(type)));
     in_type(ptr, obj, type);
     obj->type = type;
-    
+
     if (obj->class == CCONST) {
       if (obj->type->form == FREAL || obj->type->form == FINTEGER) {
         fread(&(obj->value), sizeof(obj->value), 1, ptr);
@@ -268,8 +256,7 @@ import(char *impid) {
   fclose(ptr);
 }
 
-void
-out_parameter(FILE *ptr, Object parameter, int nofpar) {
+void out_parameter(FILE *ptr, Object parameter, int nofpar) {
   int class;
   if (nofpar > 0) {
     out_parameter(ptr, parameter->next, nofpar - 1);
@@ -280,8 +267,7 @@ out_parameter(FILE *ptr, Object parameter, int nofpar) {
   }
 }
 
-void
-out_type(FILE *ptr, Type tp) {
+void out_type(FILE *ptr, Type tp) {
   int placehodler = 0;
   fwrite(&(tp->form), sizeof(tp->form), 1, ptr);
 
@@ -298,8 +284,7 @@ out_type(FILE *ptr, Type tp) {
   }
 }
 
-void
-export(char *modid) {
+void export(char *modid) {
   FILE *ptr;
   int placehodler = 0;
   char filename[TEXTLEN];
@@ -312,15 +297,14 @@ export(char *modid) {
   // class
   // name
   // form
-  while(obj != NULL) {
+  while (obj != NULL) {
     if (obj->expo) {
-      // fwrite(obj, sizeof(*obj), 1, ptr); 
+      // fwrite(obj, sizeof(*obj), 1, ptr);
       // fwrite(obj->type, sizeof(*(obj->type)), 1, ptr);
       fwrite(&(obj->class), sizeof(obj->class), 1, ptr);
       fwrite(obj->name, sizeof(char), TEXTLEN + 1, ptr);
       out_type(ptr, obj->type);
       if (obj->class == CTYPE) {
-
       } else if (obj->class == CCONST) {
         if (obj->type->form == FREAL || obj->type->form == FINTEGER) {
           fwrite(&(obj->value), sizeof(obj->value), 1, ptr);
@@ -334,30 +318,25 @@ export(char *modid) {
   fclose(ptr);
 }
 
-void
-base_start() {
-  TopScope = Universe;
+void base_start() { TopScope = Universe; }
+
+void enter(char *name, int class, Type tp, long int n) {
+  Object obj = checked_malloc(sizeof(*obj));
+  obj->class = class;
+  obj->value = n;
+  copy_ident(obj->name, name);
+  obj->type = tp;
+  obj->dsc = NULL;
+  hash_insert(System, obj);
+  // obj->next = System;
+  // System = obj;
 }
 
-void 
-enter(char* name, int class, Type tp, long int n) {
-    Object obj = checked_malloc(sizeof(*obj));
-    obj->class = class;
-    obj->value = n;
-    copy_ident(obj->name, name);
-    obj->type = tp;
-    obj->dsc = NULL;
-    hash_insert(System, obj);
-    // obj->next = System;
-    // System = obj;
-}
-
-void
-base_init() {
+void base_init() {
   BoolType = checked_malloc(sizeof(*BoolType));
   BoolType->form = FBOOLEAN;
   BoolType->size = 1;
-  
+
   IntType = checked_malloc(sizeof(*IntType));
   IntType->form = FINTEGER;
   IntType->size = WORDSIZE;
@@ -369,26 +348,26 @@ base_init() {
   RealType = checked_malloc(sizeof(*RealType));
   RealType->form = FREAL;
   RealType->size = WORDSIZE;
-  
+
   StringType = checked_malloc(sizeof(*StringType));
   StringType->form = FSTRING;
   StringType->size = WORDSIZE;
-  
+
   NoType = checked_malloc(sizeof(*NoType));
   NoType->form = FNOTYPE;
   NoType->size = WORDSIZE;
 
   NilType = checked_malloc(sizeof(*NilType));
-  NilType->form = FNILTYP;
+  NilType->form = FNILTYPE;
   NilType->size = WORDSIZE;
 
   open_scope();
 
   System = TopScope;
   // type
-  enter("boolean",CTYPE, BoolType, 0);
-  enter("integer",CTYPE, IntType, 0);
-  enter("char",CTYPE, CharType, 0);
+  enter("boolean", CTYPE, BoolType, 0);
+  enter("integer", CTYPE, IntType, 0);
+  enter("char", CTYPE, CharType, 0);
   enter("string", CTYPE, StringType, 0);
   enter("real", CTYPE, RealType, 0);
   // stand proc
@@ -403,5 +382,13 @@ base_init() {
   enter("Ord", CSFUNC, IntType, 41);
   enter("Chr", CSFUNC, CharType, 51);
   enter("Asr", CSFUNC, IntType, 82);
+
+  // system
+  enter("Free", CSFUNC, IntType, 312);
+  enter("Brk", CSFUNC, IntType, 301);
+  enter("Size", CSFUNC, IntType, 181);
+  enter("Adr", CSFUNC, IntType, 171);
+  enter("Put", CSPROC, NoType, 112);
+  enter("Get", CSPROC, NoType, 102);
   Universe = TopScope;
 }

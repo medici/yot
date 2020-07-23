@@ -18,23 +18,24 @@ module boolean
         j := 55;
 
 
-
+        (*
         b := (i > j) & (i < j) & ((i > j) & (i < j));
         Text.WriteBool(b);
         Text.WriteLn;
 
-       
+
+        *)
         b := ~(~(~(tru or tru & fls) or tru & fls) or ~fls);
         Text.WriteBool(b);
         Text.WriteLn;
-
+        (*
         b := false;
         Text.WriteBool(b);
         Text.WriteLn;
         b := (i > j) & (i < j) & ((i > j) & (i < j));
         Text.WriteBool(b);
         Text.WriteLn;
-        b := fls & (tru or (tru & fls));
+            b := fls & (tru or (tru & fls));
         Text.WriteBool(b);
         Text.WriteLn;
         b := ((tru & fls) or tru) & fls; 
@@ -75,7 +76,7 @@ module boolean
         b := ((i <= j) or (i > j)) & (i # j);
         Text.WriteBool(b);
         Text.WriteLn;
-        
+        *)
         
     end;
 

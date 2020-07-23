@@ -1,0 +1,206 @@
+module System
+	import Text;
+
+  const CHUNKSIZE = 16384;
+        ROOTSIZE = 32;
+        WORDSIZE = 8;
+        ALIGNMENT = 16;
+        OVERHEAD = 16;
+
+  type 
+    Heap = pointer to HeapDesc;
+    HeapDesc = record
+      size : integer;
+      next: Heap;
+      heap : integer;
+    end;
+
+    Root = pointer to RootDesc;
+    RootDesc = record
+      alloc : integer;
+      addr  : integer;
+      next  : Root;
+      children : integer;
+    end;
+
+
+  var RootObj : Root;
+      RootChunk : integer;
+      RootIndex : integer;
+      Top : Heap;
+      HeapArray : array 2048 of HeapDesc;
+      HeapIndex : integer;
+
+  func GetSize(p : integer) : integer
+    |
+      var value : integer;
+    |
+
+    Get(p, value);
+    return value div 8
+  end;
+
+  func GetAlloc(p : integer) : integer
+    |
+      var value : integer;
+    |
+
+    Get(p, value);
+    return p mod 2
+  end;
+
+  func ChunkAlign (size : integer) : integer
+    return ((size + (CHUNKSIZE - 1)) div CHUNKSIZE) * CHUNKSIZE
+  end;
+
+  func Align(size : integer) : integer
+    return ((size + (ALIGNMENT - 1)) div ALIGNMENT) * ALIGNMENT
+  end;
+
+  func Pack(size : integer; alloc : integer) : integer
+    return size + alloc
+  end;
+
+  func Hdrp(bp : integer) : integer
+    return bp - WORDSIZE
+  end;
+
+  func Ftrp(bp : integer) : integer
+    return bp + GetSize((Hdrp(bp))) - OVERHEAD
+  end;
+
+  func NextBlkp(bp : integer) : integer
+    return bp + GetSize(Hdrp(bp))
+  end;
+
+  func PrevBlkp(bp : integer) : integer
+    return bp - GetSize(bp - OVERHEAD)
+  end;
+  
+  func ExtendHead(size : integer) : integer
+    |
+      var newHeap : Heap;
+          chunkSize: integer;
+          header : integer;
+          footer : integer;
+    |
+    HeapIndex := 0;
+    header := Adr(HeapArray[HeapIndex]);
+    Put(Adr(newHeap), header);
+    
+    HeapIndex := HeapIndex + 1;
+    chunkSize := ChunkAlign(size + OVERHEAD * 3);
+    newHeap.heap := Brk(chunkSize);
+    newHeap.size := chunkSize;
+
+    if newHeap.heap # -1 then
+      
+      header := newHeap.heap;
+      footer := header + WORDSIZE;
+      Put(header, Pack(OVERHEAD, 1));
+      Put(footer, Pack(OVERHEAD, 1));
+       
+      newHeap.heap := newHeap.heap + 3 * WORDSIZE;
+      chunkSize := chunkSize - 3 * WORDSIZE;
+      header := Hdrp(newHeap.heap);
+      Put(header, Pack(chunkSize, 0));
+      footer := Ftrp(newHeap.heap);
+      Put(footer, Pack(chunkSize, 0));
+      header := Hdrp(NextBlkp(newHeap.heap));
+      Put(header, Pack(0, 1));
+      newHeap.heap := newHeap.heap -  OVERHEAD;
+      newHeap.next := Top;
+      Top := newHeap;
+      
+    end;
+
+    return newHeap.heap
+  end;
+
+  func FindFit (size : integer) : integer
+    |
+      var heap : Heap;
+          bp   : integer;
+          find : boolean;
+    |
+
+    heap := Top;
+   
+    find := false;
+   
+    while (heap # nil) & ((find = false) or (find = true)) do
+      bp := heap.heap;
+      
+      while (GetSize(Hdrp(bp)) # 0) & (find = false) do
+        if (GetAlloc(Hdrp(bp)) = 0) & (GetSize(Hdrp(bp)) >= size) then
+          find := true
+        else
+          bp := NextBlkp(bp);
+        end;
+      end;
+      
+      heap := heap.next;
+    end;
+
+    if find = false then
+      bp := -1
+    end;
+    return bp
+    
+  end;
+
+  func Malloc(size : integer) : integer
+    |
+      var newSize, bp : integer;
+    |
+
+    newSize := Align(size + OVERHEAD);
+    bp := FindFit(newSize);
+
+    if bp = -1 then
+      bp := ExtendHead(newSize);
+      if bp = -1 then
+        Text.WriteString("Ran out of memory!");
+        Text.WriteLn
+      else
+        bp := FindFit(newSize)
+      end
+    end;
+
+    return bp
+  end;
+
+
+
+  func CreateRoot()
+    |
+      var next : Root;
+    |
+    if nil = RootObj then
+      RootIndex := 0;
+      RootChunk := Brk(CHUNKSIZE * 2);
+      Put(RootChunk ,RootObj); 
+      RootIndex := RootIndex + 1;
+      RootObj.next := nil;
+      RootObj.alloc := 1;
+      Put(RootChunk + RootIndex * ROOTSIZE, next);
+      next.alloc := 2;
+    else 
+      Put(RootChunk + RootIndex * ROOTSIZE ,RootObj); 
+      RootIndex := RootIndex + 1;
+    end
+  end;
+
+
+  func main()
+    |
+      var bp : integer;
+    |
+
+    bp := Malloc(8);
+    Text.WriteInt(bp);
+    Text.WriteLn
+  end;
+
+
+end.

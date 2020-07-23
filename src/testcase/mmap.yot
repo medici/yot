@@ -1,0 +1,107 @@
+module mmap
+	import Text;
+
+  type 
+    PtrBase = pointer to PtrBaseDesc;
+    PtrBaseDesc = record  (*list of names of pointer base types*)
+      index: integer;
+      next: PtrBase
+    end;
+
+  var 
+		addr : integer;
+   (* 
+  func testAdr(i : integer; c : char) 
+    |
+      var 
+        b : boolean;
+        addr : integer;
+    |
+
+    addr := Adr(c);
+    Text.WriteInt(addr);
+    Text.WriteLn;
+    addr := Adr(i);
+    Text.WriteInt(addr);
+    Text.WriteLn;
+    addr := Adr(b);
+    Text.WriteInt(addr);
+    Text.WriteLn;
+    addr := Adr(addr);
+    Text.WriteInt(addr);
+    Text.WriteLn;
+  end;
+
+  func testGet()
+    |
+      var 
+        i, j, addr : integer;
+    |
+
+    i := 2;
+    addr := Adr(i);
+    Get(addr, j);
+    Text.WriteInt(j);
+    Text.WriteLn;
+
+  end;
+
+  func testPut()
+    |
+      var 
+        i, j, addr : integer;
+    |
+
+    i := 2;
+    addr := Adr(j);
+    Put(addr, i);
+    Text.WriteInt(j);
+    Text.WriteLn;
+  end;
+ *)
+  func main()
+    |
+      var 
+        p : PtrBase;
+        desc : PtrBaseDesc;
+        point : integer;
+    |
+    (* 
+      testAdr(1, 41x);
+      testGet();
+      testPut();
+      addr := Brk(1024);
+      Text.WriteInt(addr);
+      Text.WriteLn;
+   
+
+    desc.index := 100;
+    addr := Adr(desc);
+    Text.WriteInt(addr);
+    Text.WriteLn;
+    point := Adr(addr);
+    Text.WriteInt(point);
+    Text.WriteLn;
+    Get(point, p);
+    Text.WriteInt(p.index);
+    Text.WriteLn;
+    addr := Brk(1024);
+    point := Adr(addr);
+    Get(point, p);
+    p.index := 999;
+    desc.next := p;
+    Text.WriteInt(desc.next.index);
+    Text.WriteLn;
+    point := Free(addr, 1024);
+
+    if point = 0 then
+      Text.WriteString("free successful");
+      Text.WriteLn
+    end;
+ *)
+    point := Size(PtrBaseDesc);
+    Text.WriteInt(point);
+    Text.WriteLn;
+  end;
+
+end.

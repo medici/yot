@@ -8,7 +8,7 @@ module Text
 		|
 			
 			var x0, index : integer;
-				arr : array 10 of integer;
+				arr : array 20 of integer;
 		|
 
 		index := 0;

@@ -16,6 +16,8 @@ module forstatement
 		Text.WriteInt(j);
 		Text.WriteLn;
 		Text.WriteInt(i);
+		Text.WriteLn;
+		Text.WriteInt(z);
 		Text.WriteLn
 	end;
 end.
